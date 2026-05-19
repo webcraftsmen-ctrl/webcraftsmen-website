@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
-    <title>webcraftsmen</title>
+    <title>WebCraftsmen</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -93,7 +93,6 @@
             color: var(--primary);
         }
 
-        /* Buttons Uniformly Uppercase */
         .lang-toggle, .xray-toggle {
             background: var(--glass);
             border: 1px solid var(--primary);
@@ -103,10 +102,11 @@
             font-family: inherit; font-weight: bold; font-size: clamp(0.75rem, 1.5vw, 0.9rem);
             text-transform: uppercase; letter-spacing: 1px;
             position: relative; overflow: hidden; transition: all 0.3s;
+            cursor: none;
         }
         
         .lang-toggle { display: flex; align-items: center; gap: 6px; }
-        .globe-icon { color: var(--primary); width: clamp(14px, 2vw, 16px); height: clamp(14px, 2vw, 16px); }
+        .globe-icon { color: var(--primary); width: clamp(14px, 2vw, 16px); height: clamp(14px, 2vw, 16px); pointer-events: none; }
         .lang-toggle:hover { background: rgba(0, 255, 204, 0.15); box-shadow: 0 0 15px rgba(0, 255, 204, 0.3); }
 
         .xray-toggle {
@@ -278,7 +278,6 @@
             padding: 1px 3px; z-index: 50; line-height: 1; pointer-events: none; opacity: 0; 
         }
 
-        /* X-RAY STATE */
         body.xray-mode { background-color: #000; }
         body.xray-mode #webgl-canvas { opacity: 0; } 
         body.xray-mode .xray-grid { opacity: 1; } 
@@ -304,25 +303,20 @@
         <div class="nav-controls desktop-controls">
             <button class="xray-toggle">INITIALIZE X-RAY</button>
             <button class="lang-toggle">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="globe-icon">
-                    <circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="globe-icon"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
                 <span class="lang-text">SWITCH TO RO</span>
             </button>
         </div>
     </nav>
 
     <div id="fullpage-wrapper">
-        
         <section id="home">
             <div class="hero reveal">
                 <h1 id="t-hero-title">Engineering Digital<br><span style="color: var(--primary)">Perfection</span></h1>
                 <div class="nav-controls mobile-controls">
                     <button class="xray-toggle">INITIALIZE X-RAY</button>
                     <button class="lang-toggle">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="globe-icon">
-                            <circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="globe-icon"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
                         <span class="lang-text">SWITCH TO RO</span>
                     </button>
                 </div>
