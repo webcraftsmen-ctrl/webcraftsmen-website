@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
     <title>WebCraftsmen</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,11 +27,14 @@
             cursor: none;
         }
 
+        /* PERFECT ALIGNMENT ARCHITECTURE 
+           Using dvh (Dynamic Viewport Height) to handle mobile browser bars
+        */
         html {
             scroll-behavior: smooth;
             scroll-snap-type: y mandatory;
-            height: 100vh;
-            overflow-y: scroll;
+            height: 100%;
+            overflow-x: hidden;
         }
 
         body {
@@ -40,13 +43,14 @@
             font-family: 'Space Grotesk', sans-serif;
             overflow-x: hidden;
             margin: 0;
+            height: 100%;
             -webkit-font-smoothing: antialiased;
         }
 
         /* Interactive Canvas Background */
         #webgl-canvas {
             position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
+            top: 0; left: 0; width: 100vw; height: 100dvh;
             z-index: -1;
             background: radial-gradient(circle at center, #111 0%, #000 100%);
             will-change: opacity;
@@ -59,7 +63,7 @@
             border-radius: 50%;
             z-index: 9999;
             pointer-events: none;
-            will-change: transform, width, height;
+            will-change: transform;
         }
         .cursor-dot {
             width: 8px; height: 8px;
@@ -122,25 +126,19 @@
             box-shadow: 0 0 20px rgba(0, 255, 204, 0.4); transform: translateY(-1px);
         }
 
-        /* RESPONSIVE UI PLACEMENT */
-        .mobile-controls {
-            display: none; /* Hidden by default on desktop */
-        }
+        /* Responsive UI Placement */
+        .mobile-controls { display: none; }
 
         @media (max-width: 768px) {
-            .desktop-controls {
-                display: none !important; /* Hide top right buttons on mobile */
-            }
-            nav {
-                justify-content: center; /* Center logo on mobile */
-            }
+            .desktop-controls { display: none !important; }
+            nav { justify-content: center; }
             .mobile-controls {
                 display: flex !important;
                 flex-direction: row;
                 justify-content: center;
                 align-items: center;
-                gap: 15px;
-                margin: 25px 0 35px 0; /* Stylish spacing between title and subtitle */
+                gap: 12px;
+                margin: 20px 0 30px 0;
                 width: 100%;
             }
         }
@@ -153,18 +151,16 @@
         }
         .reveal.active { opacity: 1; transform: translateY(0); }
 
-        /* SECTIONS */
+        /* SECTIONS - Using dvh for perfect screen lock */
         section {
-            min-height: 100vh; width: 100vw;
-            scroll-snap-align: start; scroll-snap-stop: always;
+            height: 100dvh; 
+            width: 100vw;
+            scroll-snap-align: start; 
+            scroll-snap-stop: always;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            padding: 80px 5vw 40px; 
+            padding: 20px 5vw;
             position: relative;
-        }
-
-        @media (max-width: 768px) {
-            section { scroll-snap-align: none; min-height: auto; padding-top: 120px; padding-bottom: 60px; }
-            html { scroll-snap-type: none; } 
+            overflow: hidden;
         }
 
         /* Hero */
@@ -173,7 +169,6 @@
             font-size: clamp(2rem, 6vw, 6rem); line-height: 1.1; margin-bottom: 0px;
             text-shadow: 0 0 40px rgba(0, 255, 204, 0.2);
         }
-        /* Mobile adjustment for desktop margin */
         @media (min-width: 769px) { h1 { margin-bottom: 20px; } }
         
         .hero p {
@@ -182,15 +177,15 @@
 
         /* Pricing Container */
         .pricing-container {
-            display: flex; justify-content: center; gap: clamp(20px, 4vw, 40px);
+            display: flex; justify-content: center; gap: clamp(15px, 4vw, 40px);
             flex-wrap: wrap; width: 100%; max-width: 1200px;
         }
 
         .price-card {
             background: var(--glass); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             border: 1px solid var(--glass-border); border-radius: 24px;
-            padding: clamp(25px, 4vw, 40px) clamp(20px, 3vw, 30px);
-            flex: 1 1 300px; max-width: 450px;
+            padding: clamp(20px, 4vw, 40px) clamp(15px, 3vw, 30px);
+            flex: 1 1 280px; max-width: 450px;
             position: relative; overflow: hidden; display: flex; flex-direction: column;
             will-change: transform; transition: transform 0.3s, box-shadow 0.3s;
         }
@@ -209,16 +204,16 @@
         .price-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5); }
 
         .tier-name {
-            font-size: clamp(0.9rem, 1.5vw, 1.1rem); color: var(--text-dim);
-            text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px;
+            font-size: clamp(0.8rem, 1.5vw, 1.1rem); color: var(--text-dim);
+            text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px;
         }
-        .price { font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 700; margin-bottom: 20px; }
-        .price span { font-size: 1.2rem; color: var(--primary); vertical-align: top; }
+        .price { font-size: clamp(1.8rem, 4vw, 3.5rem); font-weight: 700; margin-bottom: 15px; }
+        .price span { font-size: 1.1rem; color: var(--primary); vertical-align: top; }
 
-        ul { list-style: none; margin-bottom: 30px; flex-grow: 1; }
+        ul { list-style: none; margin-bottom: 20px; flex-grow: 1; }
         li {
-            margin: clamp(6px, 1.5vw, 12px) 0; display: flex; align-items: center; gap: 10px;
-            color: #ccc; font-size: clamp(0.85rem, 1.2vw, 0.95rem);
+            margin: clamp(4px, 1vw, 10px) 0; display: flex; align-items: center; gap: 8px;
+            color: #ccc; font-size: clamp(0.8rem, 1.2vw, 0.9rem);
         }
 
         .icon-check { color: var(--primary); font-weight: bold; }
@@ -228,7 +223,7 @@
             display: block; width: 100%; padding: 12px;
             background: transparent; border: 1px solid var(--primary); color: var(--primary);
             text-align: center; border-radius: 10px; font-size: 1rem; font-weight: bold;
-            position: relative; overflow: hidden; z-index: 1; text-decoration: none; margin-top: auto;
+            position: relative; overflow: hidden; z-index: 1; text-decoration: none;
         }
         .btn::before {
             content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
@@ -238,52 +233,52 @@
         .btn:hover { color: #000; }
 
         /* Dual Contact Architecture */
-        .section-header { text-align: center; margin-bottom: clamp(20px, 4vw, 40px); }
-        .section-header h2 { font-size: clamp(1.8rem, 4vw, 3rem); margin-bottom: 10px; }
+        .section-header { text-align: center; margin-bottom: clamp(15px, 4vw, 30px); }
+        .section-header h2 { font-size: clamp(1.6rem, 4vw, 3rem); margin-bottom: 5px; }
 
         .contact-dual-container {
-            display: flex; flex-direction: row; gap: 30px; width: 100%; max-width: 1000px;
+            display: flex; flex-direction: row; gap: 20px; width: 100%; max-width: 1000px;
             background: var(--glass); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             border: 1px solid var(--glass-border); border-radius: 24px;
-            padding: clamp(20px, 4vw, 40px);
+            padding: clamp(20px, 4vw, 30px);
         }
 
         @media (max-width: 768px) {
-            .contact-dual-container { flex-direction: column; gap: 20px; }
+            .contact-dual-container { flex-direction: column; gap: 15px; }
         }
 
         .contact-classic {
-            flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 15px;
+            flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 12px;
             padding-right: 20px; border-right: 1px solid var(--glass-border);
         }
 
         @media (max-width: 768px) {
-            .contact-classic { border-right: none; border-bottom: 1px solid var(--glass-border); padding-right: 0; padding-bottom: 20px; }
+            .contact-classic { border-right: none; border-bottom: 1px solid var(--glass-border); padding-right: 0; padding-bottom: 15px; }
         }
 
-        .contact-classic h3 { color: var(--primary); font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px; text-align: center; }
+        .contact-classic h3 { color: var(--primary); font-size: 1.1rem; text-transform: uppercase; letter-spacing: 2px; text-align: center; }
 
         .contact-btn {
-            display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%;
-            padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px; color: var(--text-main); text-decoration: none; font-size: 1rem; transition: all 0.3s;
+            display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
+            padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px; color: var(--text-main); text-decoration: none; font-size: 0.95rem; transition: all 0.3s;
         }
         .contact-btn:hover { background: rgba(0, 255, 204, 0.1); border-color: var(--primary); transform: translateY(-2px); }
 
         .contact-terminal {
             flex: 1.5; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--glass-border);
             border-radius: 12px; padding: 15px; font-family: 'Courier New', Courier, monospace;
-            display: flex; flex-direction: column; height: 250px; position: relative;
+            display: flex; flex-direction: column; height: 220px; position: relative;
         }
 
-        .term-header { color: var(--text-dim); font-size: 0.75rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 8px; margin-bottom: 8px; text-align: center; pointer-events: none; }
-        .term-output-area { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; color: var(--primary); font-size: 0.85rem; margin-bottom: 10px; pointer-events: none; }
+        .term-header { color: var(--text-dim); font-size: 0.7rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 5px; margin-bottom: 5px; text-align: center; pointer-events: none; }
+        .term-output-area { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; color: var(--primary); font-size: 0.8rem; margin-bottom: 5px; pointer-events: none; }
         .term-line { opacity: 0; animation: fadeIn 0.3s forwards; }
         .term-user-input { color: #fff; } .term-sys-error { color: #ff3333; } .term-sys-success { color: var(--primary); }
         @keyframes fadeIn { to { opacity: 1; } }
 
-        .term-input-line { display: flex; align-items: center; gap: 8px; color: var(--primary); pointer-events: none; font-size: 0.85rem; }
-        .term-input { background: transparent; border: none; color: var(--primary); font-family: inherit; font-size: 0.85rem; flex-grow: 1; outline: none; pointer-events: auto; }
+        .term-input-line { display: flex; align-items: center; gap: 8px; color: var(--primary); pointer-events: none; font-size: 0.8rem; }
+        .term-input { background: transparent; border: none; color: var(--primary); font-family: inherit; font-size: 0.8rem; flex-grow: 1; outline: none; pointer-events: auto; }
 
         /* Cinematic X-Ray Engine */
         html, body, body *:not(.cursor-dot):not(.cursor-outline) {
@@ -291,7 +286,7 @@
         }
 
         .xray-grid {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
             background-image: linear-gradient(rgba(0, 255, 0, 0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 0, 0.15) 1px, transparent 1px);
             background-size: 40px 40px; z-index: -1; pointer-events: none; opacity: 0; 
         }
@@ -405,7 +400,6 @@
     </section>
 
     <script>
-        // Performance Hardware Check
         const isTouchDevice = (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0));
 
         /* ==========================================
@@ -460,7 +454,7 @@
         }
 
         /* ==========================================
-           1. X-RAY MODE LOGIC (Updated for multiple buttons)
+           1. X-RAY MODE LOGIC
         ========================================== */
         document.querySelectorAll('section, div, nav, h1, h2, h3, p, ul, li, a, button, input, span').forEach(el => {
             if(!el.classList.contains('cursor-dot') && !el.classList.contains('cursor-outline') && !el.classList.contains('xray-grid')) {
@@ -473,7 +467,6 @@
             btn.addEventListener('click', () => {
                 document.body.classList.toggle('xray-mode');
                 const isXray = document.body.classList.contains('xray-mode');
-                // Update all X-Ray buttons to keep them synced
                 xrayBtns.forEach(b => b.innerText = isXray ? 'Disable X-Ray' : 'Initialize X-Ray');
             });
         });
@@ -516,7 +509,7 @@
         }
 
         /* ==========================================
-           3. CANVAS PHYSICS (Scaled for Mobile)
+           3. CANVAS PHYSICS
         ========================================== */
         const canvas = document.getElementById('webgl-canvas');
         const ctx = canvas.getContext('2d');
@@ -578,16 +571,12 @@
         }
         initParticles(); animateParticles();
         
-        let resizeTimeout;
         window.addEventListener('resize', () => {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(() => {
-                canvas.width = window.innerWidth; canvas.height = window.innerHeight; initParticles();
-            }, 200);
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight; initParticles();
         });
 
         /* ==========================================
-           4. SCROLL REVEAL (IntersectionObserver)
+           4. SCROLL REVEAL
         ========================================== */
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
@@ -595,7 +584,7 @@
         document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
 
         /* ==========================================
-           5. DATA-DRIVEN TRANSLATION ENGINE
+           5. TRANSLATION ENGINE
         ========================================== */
         const dictionary = {
             en: {
@@ -626,14 +615,9 @@
         langBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 currentLang = currentLang === 'en' ? 'ro' : 'en';
-                
-                // Update all language toggle texts
-                document.querySelectorAll('.lang-text').forEach(textSpan => {
-                    textSpan.innerText = currentLang === 'en' ? 'Switch to RO' : 'Schimbă în EN';
-                });
-                
-                // Translate the rest of the page
+                document.querySelectorAll('.lang-text').forEach(t => t.innerText = currentLang === 'en' ? 'Switch to RO' : 'Schimbă în EN');
                 document.querySelectorAll('[id^="t-"]').forEach(el => {
+                    if(el.id === 'lang-btn' || el.id === 'lang-text') return;
                     el.style.opacity = '0';
                     setTimeout(() => {
                         if (dictionary[currentLang][el.id]) el.innerHTML = dictionary[currentLang][el.id];
