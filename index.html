@@ -27,7 +27,6 @@
             cursor: none;
         }
 
-        /* HARD-LOCKED NATIVE SCROLL */
         html, body {
             height: 100%;
             overflow: hidden; 
@@ -53,7 +52,6 @@
             will-change: opacity;
         }
 
-        /* Custom Cursor */
         .cursor-dot, .cursor-outline {
             position: fixed; top: 0; left: 0;
             transform: translate(-50%, -50%);
@@ -78,7 +76,6 @@
             .cursor-dot, .cursor-outline { display: none !important; }
         }
 
-        /* Navbar */
         nav {
             position: absolute; top: 0; width: 100%;
             padding: clamp(15px, 3vw, 30px) 5vw;
@@ -90,31 +87,30 @@
             display: flex; gap: clamp(8px, 2vw, 15px); align-items: center;
         }
 
-        /* LOGO - Gradient Removed */
         .logo {
             font-size: clamp(1.2rem, 3vw, 1.5rem);
             font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
             color: var(--primary);
         }
 
-        /* Buttons */
+        /* Buttons Uniformly Uppercase */
         .lang-toggle, .xray-toggle {
             background: var(--glass);
-            border: 1px solid var(--glass-border);
-            color: var(--text-main);
+            border: 1px solid var(--primary);
+            color: var(--primary);
             padding: clamp(8px, 1.5vw, 10px) clamp(12px, 2vw, 20px);
             border-radius: 30px;
             font-family: inherit; font-weight: bold; font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+            text-transform: uppercase; letter-spacing: 1px;
             position: relative; overflow: hidden; transition: all 0.3s;
         }
         
         .lang-toggle { display: flex; align-items: center; gap: 6px; }
         .globe-icon { color: var(--primary); width: clamp(14px, 2vw, 16px); height: clamp(14px, 2vw, 16px); }
-        .lang-toggle:hover { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.2); }
+        .lang-toggle:hover { background: rgba(0, 255, 204, 0.15); box-shadow: 0 0 15px rgba(0, 255, 204, 0.3); }
 
         .xray-toggle {
-            background: transparent; border: 1px solid var(--primary);
-            color: var(--primary); text-transform: uppercase; letter-spacing: 1px;
+            background: transparent;
             box-shadow: 0 0 10px rgba(0, 255, 204, 0.15);
         }
         .xray-toggle:hover {
@@ -150,7 +146,6 @@
             overflow: hidden;
         }
 
-        /* Hero */
         .hero { text-align: center; }
         h1 {
             font-size: clamp(2rem, 6vw, 6rem); line-height: 1.1; margin-bottom: 0px;
@@ -162,7 +157,6 @@
             font-size: clamp(0.9rem, 2vw, 1.2rem); color: var(--text-dim); max-width: 600px; margin: 0 auto;
         }
 
-        /* Pricing */
         .pricing-container {
             display: flex; justify-content: center; gap: clamp(15px, 4vw, 40px);
             flex-wrap: wrap; width: 100%; max-width: 1200px;
@@ -211,6 +205,7 @@
             background: transparent; border: 1px solid var(--primary); color: var(--primary);
             text-align: center; border-radius: 10px; font-size: 1rem; font-weight: bold;
             position: relative; overflow: hidden; z-index: 1; text-decoration: none; cursor: pointer;
+            text-transform: uppercase;
         }
         .btn::before {
             content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
@@ -219,7 +214,6 @@
         .btn:hover::before { left: 0; }
         .btn:hover { color: #000; }
 
-        /* Dual Contact */
         .section-header { text-align: center; margin-bottom: clamp(15px, 4vw, 30px); }
         .section-header h2 { font-size: clamp(1.6rem, 4vw, 3rem); margin-bottom: 5px; }
 
@@ -308,12 +302,12 @@
     <nav>
         <div class="logo">WebCraftsmen</div>
         <div class="nav-controls desktop-controls">
-            <button class="xray-toggle">Initialize X-Ray</button>
+            <button class="xray-toggle">INITIALIZE X-RAY</button>
             <button class="lang-toggle">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="globe-icon">
                     <circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
                 </svg>
-                <span class="lang-text">Switch to RO</span>
+                <span class="lang-text">SWITCH TO RO</span>
             </button>
         </div>
     </nav>
@@ -324,12 +318,12 @@
             <div class="hero reveal">
                 <h1 id="t-hero-title">Engineering Digital<br><span style="color: var(--primary)">Perfection</span></h1>
                 <div class="nav-controls mobile-controls">
-                    <button class="xray-toggle">Initialize X-Ray</button>
+                    <button class="xray-toggle">INITIALIZE X-RAY</button>
                     <button class="lang-toggle">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="globe-icon">
                             <circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
                         </svg>
-                        <span class="lang-text">Switch to RO</span>
+                        <span class="lang-text">SWITCH TO RO</span>
                     </button>
                 </div>
                 <p id="t-hero-sub">We construct uncompromised web architecture. Raw performance. Absolute functionality. Zero bloat.</p>
@@ -388,13 +382,9 @@
                 </div>
             </div>
         </section>
-
     </div>
 
     <script>
-        /* ==========================================
-           0. DYNAMIC BROWSER TAB FAVICON ENGINE
-        ========================================== */
         function generateFavicon(isXray) {
             const color = isXray ? '#00ff00' : '#00ffcc';
             const svgData = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>`;
@@ -404,9 +394,6 @@
         }
         generateFavicon(false);
 
-        /* ==========================================
-           1. FULLPAGE SCROLL HIJACK ENGINE
-        ========================================== */
         const wrapper = document.getElementById('fullpage-wrapper');
         const totalSections = 3;
         let currentSection = 0;
@@ -461,9 +448,6 @@
             else if (e.key === 'ArrowUp' || e.key === 'PageUp') { if (currentSection > 0) { gotoSection(currentSection - 1); lastScrollTime = now; } }
         });
 
-        /* ==========================================
-           2. LIVE TERMINAL LOGIC
-        ========================================== */
         const termOutput = document.getElementById('term-output');
         const termInput = document.getElementById('term-input');
         const terminalContainer = document.getElementById('terminal-container');
@@ -519,9 +503,6 @@
             }
         }
 
-        /* ==========================================
-           3. X-RAY MODE LOGIC
-        ========================================== */
         document.querySelectorAll('section, div, nav, h1, h2, h3, p, ul, li, a, button, input, span').forEach(el => {
             if(!el.classList.contains('cursor-dot') && !el.classList.contains('cursor-outline') && !el.classList.contains('xray-grid')) {
                 if(el.tagName.toLowerCase() !== 'input' && el.id !== 'fullpage-wrapper') { el.setAttribute('data-tag', el.tagName.toLowerCase()); }
@@ -533,14 +514,11 @@
             btn.addEventListener('click', () => {
                 document.body.classList.toggle('xray-mode');
                 const isXray = document.body.classList.contains('xray-mode');
-                xrayBtns.forEach(b => b.innerText = isXray ? 'Disable X-Ray' : 'Initialize X-Ray');
+                xrayBtns.forEach(b => b.innerText = isXray ? 'DISABLE X-RAY' : 'INITIALIZE X-RAY');
                 generateFavicon(isXray); 
             });
         });
 
-        /* ==========================================
-           4. CURSOR PHYSICS 
-        ========================================== */
         const isTouchDevice = (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0));
         if (!isTouchDevice) {
             const cursorDot = document.querySelector('.cursor-dot');
@@ -564,63 +542,7 @@
                 });
             });
         }
-
-        /* ==========================================
-           5. CANVAS PHYSICS
-        ========================================== */
-        const canvas = document.getElementById('webgl-canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-
-        let particlesArray = [];
-        let particleDensity = isTouchDevice || window.innerWidth < 768 ? 20000 : 10000;
-        let numberOfParticles = Math.min(isTouchDevice ? 30 : 100, (canvas.width * canvas.height) / particleDensity);
         
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 1.5 + 0.5;
-                this.speedX = Math.random() * 0.8 - 0.4; this.speedY = Math.random() * 0.8 - 0.4;
-            }
-            update() {
-                this.x += this.speedX; this.y += this.speedY;
-                if (this.x > canvas.width || this.x < 0) this.speedX = -this.speedX;
-                if (this.y > canvas.height || this.y < 0) this.speedY = -this.speedY;
-            }
-            draw() {
-                ctx.fillStyle = 'rgba(0, 255, 204, 0.4)'; ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
-            }
-        }
-
-        function initParticles() {
-            particlesArray = [];
-            numberOfParticles = Math.min(isTouchDevice ? 30 : 100, (canvas.width * canvas.height) / particleDensity);
-            for (let i = 0; i < numberOfParticles; i++) particlesArray.push(new Particle());
-        }
-
-        function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for (let i = 0; i < particlesArray.length; i++) {
-                particlesArray[i].update(); particlesArray[i].draw();
-                for (let j = i; j < particlesArray.length; j++) {
-                    let dx = particlesArray[i].x - particlesArray[j].x, dy = particlesArray[i].y - particlesArray[j].y;
-                    let distance = Math.sqrt(dx * dx + dy * dy);
-                    if (distance < 100) {
-                        ctx.beginPath(); ctx.strokeStyle = `rgba(0, 255, 204, ${0.8 - distance/100})`;
-                        ctx.lineWidth = 0.4; ctx.moveTo(particlesArray[i].x, particlesArray[i].y);
-                        ctx.lineTo(particlesArray[j].x, particlesArray[j].y); ctx.stroke();
-                    }
-                }
-            }
-            requestAnimationFrame(animateParticles);
-        }
-        initParticles(); animateParticles();
-        window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; initParticles(); });
-
-        /* ==========================================
-           6. TRANSLATION ENGINE
-        ========================================== */
         const dictionary = {
             en: {
                 't-hero-title': 'Engineering Digital<br><span style="color: var(--primary)">Perfection</span>',
@@ -648,7 +570,7 @@
         langBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 currentLang = currentLang === 'en' ? 'ro' : 'en';
-                document.querySelectorAll('.lang-text').forEach(t => t.innerText = currentLang === 'en' ? 'Switch to RO' : 'Schimbă în EN');
+                document.querySelectorAll('.lang-text').forEach(t => t.innerText = currentLang === 'en' ? 'SWITCH TO RO' : 'SCHIMBĂ ÎN EN');
                 document.querySelectorAll('[id^="t-"]').forEach(el => {
                     if(el.id === 'lang-btn' || el.id === 'lang-text') return;
                     el.style.opacity = '0';
