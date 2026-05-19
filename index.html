@@ -40,7 +40,7 @@
             font-family: 'Space Grotesk', sans-serif;
             overflow-x: hidden;
             margin: 0;
-            -webkit-font-smoothing: antialiased; /* Crisper text on mobile */
+            -webkit-font-smoothing: antialiased;
         }
 
         /* Interactive Canvas Background */
@@ -122,7 +122,30 @@
             box-shadow: 0 0 20px rgba(0, 255, 204, 0.4); transform: translateY(-1px);
         }
 
-        /* Scroll Reveal Utility (GPU Accelerated) */
+        /* RESPONSIVE UI PLACEMENT */
+        .mobile-controls {
+            display: none; /* Hidden by default on desktop */
+        }
+
+        @media (max-width: 768px) {
+            .desktop-controls {
+                display: none !important; /* Hide top right buttons on mobile */
+            }
+            nav {
+                justify-content: center; /* Center logo on mobile */
+            }
+            .mobile-controls {
+                display: flex !important;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                gap: 15px;
+                margin: 25px 0 35px 0; /* Stylish spacing between title and subtitle */
+                width: 100%;
+            }
+        }
+
+        /* Scroll Reveal Utility */
         .reveal {
             opacity: 0; transform: translateY(30px);
             transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
@@ -135,18 +158,26 @@
             min-height: 100vh; width: 100vw;
             scroll-snap-align: start; scroll-snap-stop: always;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            padding: 80px 5vw 40px; /* Adjusted padding for mobile nav */
+            padding: 80px 5vw 40px; 
             position: relative;
+        }
+
+        @media (max-width: 768px) {
+            section { scroll-snap-align: none; min-height: auto; padding-top: 120px; padding-bottom: 60px; }
+            html { scroll-snap-type: none; } 
         }
 
         /* Hero */
         .hero { text-align: center; }
         h1 {
-            font-size: clamp(2rem, 6vw, 6rem); line-height: 1.1; margin-bottom: 20px;
+            font-size: clamp(2rem, 6vw, 6rem); line-height: 1.1; margin-bottom: 0px;
             text-shadow: 0 0 40px rgba(0, 255, 204, 0.2);
         }
+        /* Mobile adjustment for desktop margin */
+        @media (min-width: 769px) { h1 { margin-bottom: 20px; } }
+        
         .hero p {
-            font-size: clamp(0.9rem, 2vw, 1.2rem); color: var(--text-dim); max-width: 600px;
+            font-size: clamp(0.9rem, 2vw, 1.2rem); color: var(--text-dim); max-width: 600px; margin: 0 auto;
         }
 
         /* Pricing Container */
@@ -156,8 +187,7 @@
         }
 
         .price-card {
-            background: var(--glass); backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px); /* Safari Mobile Fix */
+            background: var(--glass); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             border: 1px solid var(--glass-border); border-radius: 24px;
             padding: clamp(25px, 4vw, 40px) clamp(20px, 3vw, 30px);
             flex: 1 1 300px; max-width: 450px;
@@ -182,9 +212,7 @@
             font-size: clamp(0.9rem, 1.5vw, 1.1rem); color: var(--text-dim);
             text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px;
         }
-        .price {
-            font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 700; margin-bottom: 20px;
-        }
+        .price { font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 700; margin-bottom: 20px; }
         .price span { font-size: 1.2rem; color: var(--primary); vertical-align: top; }
 
         ul { list-style: none; margin-bottom: 30px; flex-grow: 1; }
@@ -222,8 +250,6 @@
 
         @media (max-width: 768px) {
             .contact-dual-container { flex-direction: column; gap: 20px; }
-            section { scroll-snap-align: none; min-height: auto; padding-top: 100px; padding-bottom: 50px; }
-            html { scroll-snap-type: none; } /* Disable snap on mobile to prevent cut-off tall sections */
         }
 
         .contact-classic {
@@ -235,9 +261,7 @@
             .contact-classic { border-right: none; border-bottom: 1px solid var(--glass-border); padding-right: 0; padding-bottom: 20px; }
         }
 
-        .contact-classic h3 {
-            color: var(--primary); font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px; text-align: center;
-        }
+        .contact-classic h3 { color: var(--primary); font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px; text-align: center; }
 
         .contact-btn {
             display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%;
@@ -302,19 +326,30 @@
 
     <nav>
         <div class="logo">WebCraftsmen</div>
-        <div class="nav-controls">
-            <button class="xray-toggle" id="xray-btn">Initialize X-Ray</button>
-            <button class="lang-toggle" id="lang-btn">
+        <div class="nav-controls desktop-controls">
+            <button class="xray-toggle">Initialize X-Ray</button>
+            <button class="lang-toggle">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="globe-icon">
                     <circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
                 </svg>
-                <span id="lang-text">Switch to RO</span>
+                <span class="lang-text">Switch to RO</span>
             </button>
         </div>
     </nav>
 
     <section id="home" class="hero reveal">
         <h1 id="t-hero-title">Engineering Digital<br><span style="color: var(--primary)">Perfection</span></h1>
+        
+        <div class="nav-controls mobile-controls">
+            <button class="xray-toggle">Initialize X-Ray</button>
+            <button class="lang-toggle">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="globe-icon">
+                    <circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                </svg>
+                <span class="lang-text">Switch to RO</span>
+            </button>
+        </div>
+
         <p id="t-hero-sub">We construct uncompromised web architecture. Raw performance. Absolute functionality. Zero bloat.</p>
     </section>
 
@@ -425,7 +460,7 @@
         }
 
         /* ==========================================
-           1. X-RAY MODE LOGIC
+           1. X-RAY MODE LOGIC (Updated for multiple buttons)
         ========================================== */
         document.querySelectorAll('section, div, nav, h1, h2, h3, p, ul, li, a, button, input, span').forEach(el => {
             if(!el.classList.contains('cursor-dot') && !el.classList.contains('cursor-outline') && !el.classList.contains('xray-grid')) {
@@ -433,10 +468,14 @@
             }
         });
 
-        const xrayBtn = document.getElementById('xray-btn');
-        xrayBtn.addEventListener('click', () => {
-            document.body.classList.toggle('xray-mode');
-            xrayBtn.innerText = document.body.classList.contains('xray-mode') ? 'Disable X-Ray' : 'Initialize X-Ray';
+        const xrayBtns = document.querySelectorAll('.xray-toggle');
+        xrayBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.body.classList.toggle('xray-mode');
+                const isXray = document.body.classList.contains('xray-mode');
+                // Update all X-Ray buttons to keep them synced
+                xrayBtns.forEach(b => b.innerText = isXray ? 'Disable X-Ray' : 'Initialize X-Ray');
+            });
         });
 
         /* ==========================================
@@ -484,7 +523,6 @@
         canvas.width = window.innerWidth; canvas.height = window.innerHeight;
 
         let particlesArray = [];
-        // MASSIVE OPTIMIZATION: Drastically cut particles on small screens
         let particleDensity = isTouchDevice || window.innerWidth < 768 ? 20000 : 10000;
         let numberOfParticles = Math.min(isTouchDevice ? 30 : 100, (canvas.width * canvas.height) / particleDensity);
         
@@ -583,19 +621,25 @@
         };
 
         let currentLang = 'en';
-        const langBtn = document.getElementById('lang-btn');
+        const langBtns = document.querySelectorAll('.lang-toggle');
 
-        langBtn.addEventListener('click', () => {
-            currentLang = currentLang === 'en' ? 'ro' : 'en';
-            document.getElementById('lang-text').innerText = currentLang === 'en' ? 'Switch to RO' : 'Schimbă în EN';
-            
-            document.querySelectorAll('[id^="t-"]').forEach(el => {
-                if(el.id === 'lang-btn' || el.id === 'lang-text') return;
-                el.style.opacity = '0';
-                setTimeout(() => {
-                    if (dictionary[currentLang][el.id]) el.innerHTML = dictionary[currentLang][el.id];
-                    el.style.opacity = '1';
-                }, 300);
+        langBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                currentLang = currentLang === 'en' ? 'ro' : 'en';
+                
+                // Update all language toggle texts
+                document.querySelectorAll('.lang-text').forEach(textSpan => {
+                    textSpan.innerText = currentLang === 'en' ? 'Switch to RO' : 'Schimbă în EN';
+                });
+                
+                // Translate the rest of the page
+                document.querySelectorAll('[id^="t-"]').forEach(el => {
+                    el.style.opacity = '0';
+                    setTimeout(() => {
+                        if (dictionary[currentLang][el.id]) el.innerHTML = dictionary[currentLang][el.id];
+                        el.style.opacity = '1';
+                    }, 300);
+                });
             });
         });
     </script>
