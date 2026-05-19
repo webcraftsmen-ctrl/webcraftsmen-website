@@ -2,9 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebCraft Solutions Architect</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>WebCraftsmen</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    
     <style>
         :root {
             --bg: #050505;
@@ -20,13 +24,9 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            cursor: none; /* Custom Cursor */
+            cursor: none;
         }
 
-        /* 
-           SCROLL SNAP ARCHITECTURE 
-           This locks the page into exact 1-screen intervals
-        */
         html {
             scroll-behavior: smooth;
             scroll-snap-type: y mandatory;
@@ -40,338 +40,289 @@
             font-family: 'Space Grotesk', sans-serif;
             overflow-x: hidden;
             margin: 0;
+            -webkit-font-smoothing: antialiased; /* Crisper text on mobile */
         }
 
         /* Interactive Canvas Background */
         #webgl-canvas {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
+            top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: -1;
             background: radial-gradient(circle at center, #111 0%, #000 100%);
+            will-change: opacity;
         }
 
-        /* Custom Cursor */
+        /* Custom Cursor (GPU Accelerated) */
         .cursor-dot, .cursor-outline {
-            position: fixed;
-            top: 0;
-            left: 0;
+            position: fixed; top: 0; left: 0;
             transform: translate(-50%, -50%);
             border-radius: 50%;
             z-index: 9999;
             pointer-events: none;
+            will-change: transform, width, height;
         }
         .cursor-dot {
-            width: 8px;
-            height: 8px;
+            width: 8px; height: 8px;
             background-color: var(--primary);
+            transition: opacity 0.2s ease;
         }
         .cursor-outline {
-            width: 40px;
-            height: 40px;
+            width: 40px; height: 40px;
             border: 1px solid var(--primary);
-            transition: width 0.2s, height 0.2s, background-color 0.2s;
+            transition: width 0.2s, height 0.2s, background-color 0.2s, border-color 0.2s, opacity 0.2s ease;
         }
 
-        /* Navbar - BLURRED BAR REMOVED */
+        /* Mobile Touch Override */
+        @media (pointer: coarse) {
+            * { cursor: auto !important; }
+            .cursor-dot, .cursor-outline { display: none !important; }
+        }
+
+        /* Navbar */
         nav {
-            position: absolute; /* Stays at the top, scrolls away */
-            top: 0;
-            width: 100%;
-            padding: 30px 5vw;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            position: absolute; top: 0; width: 100%;
+            padding: clamp(15px, 3vw, 30px) 5vw;
+            display: flex; justify-content: space-between; align-items: center;
             z-index: 100;
-            background: transparent;
+        }
+        
+        .nav-controls {
+            display: flex; gap: clamp(8px, 2vw, 15px); align-items: center;
         }
 
         .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
+            font-size: clamp(1.2rem, 3vw, 1.5rem);
+            font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
             background: linear-gradient(90deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            color: transparent;
+            -webkit-background-clip: text; color: transparent;
         }
 
-        .lang-toggle {
+        /* Buttons */
+        .lang-toggle, .xray-toggle {
             background: var(--glass);
             border: 1px solid var(--glass-border);
             color: var(--text-main);
-            padding: 10px 20px;
+            padding: clamp(8px, 1.5vw, 10px) clamp(12px, 2vw, 20px);
             border-radius: 30px;
-            font-family: inherit;
-            font-weight: bold;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
+            font-family: inherit; font-weight: bold; font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+            position: relative; overflow: hidden; transition: all 0.3s;
         }
         
-        .lang-toggle:hover {
-            box-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
-            border-color: var(--primary);
+        .lang-toggle { display: flex; align-items: center; gap: 6px; }
+        .globe-icon { color: var(--primary); width: clamp(14px, 2vw, 16px); height: clamp(14px, 2vw, 16px); }
+        .lang-toggle:hover { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.2); }
+
+        .xray-toggle {
+            background: transparent; border: 1px solid var(--primary);
+            color: var(--primary); text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.15);
+        }
+        .xray-toggle:hover {
+            background: rgba(0, 255, 204, 0.15);
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.4); transform: translateY(-1px);
         }
 
-        /* Scroll Reveal Utility */
+        /* Scroll Reveal Utility (GPU Accelerated) */
         .reveal {
-            opacity: 0;
-            transform: translateY(50px);
-            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 0; transform: translateY(30px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform;
         }
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        .reveal.active { opacity: 1; transform: translateY(0); }
 
-        /* 
-           UNIVERSAL SECTION STYLING 
-           Forces every section to be exactly 1 screen tall
-        */
+        /* SECTIONS */
         section {
-            height: 100vh;
-            width: 100vw;
-            scroll-snap-align: start;
-            scroll-snap-stop: always;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 0 5vw;
+            min-height: 100vh; width: 100vw;
+            scroll-snap-align: start; scroll-snap-stop: always;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 80px 5vw 40px; /* Adjusted padding for mobile nav */
             position: relative;
         }
 
         /* Hero */
-        .hero {
-            text-align: center;
-        }
-
+        .hero { text-align: center; }
         h1 {
-            font-size: clamp(2.5rem, 6vw, 6rem);
-            line-height: 1.1;
-            margin-bottom: 20px;
+            font-size: clamp(2rem, 6vw, 6rem); line-height: 1.1; margin-bottom: 20px;
             text-shadow: 0 0 40px rgba(0, 255, 204, 0.2);
         }
-
         .hero p {
-            font-size: clamp(1rem, 2vw, 1.2rem);
-            color: var(--text-dim);
-            max-width: 600px;
+            font-size: clamp(0.9rem, 2vw, 1.2rem); color: var(--text-dim); max-width: 600px;
         }
 
-        /* Holographic Pricing Section */
+        /* Pricing Container */
         .pricing-container {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            flex-wrap: wrap;
-            width: 100%;
-            max-width: 1200px;
+            display: flex; justify-content: center; gap: clamp(20px, 4vw, 40px);
+            flex-wrap: wrap; width: 100%; max-width: 1200px;
         }
 
         .price-card {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 30px;
-            padding: clamp(30px, 4vw, 50px) clamp(20px, 3vw, 40px);
-            flex: 1;
-            min-width: 300px;
-            max-width: 450px;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.4s;
-            display: flex;
-            flex-direction: column;
+            background: var(--glass); backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px); /* Safari Mobile Fix */
+            border: 1px solid var(--glass-border); border-radius: 24px;
+            padding: clamp(25px, 4vw, 40px) clamp(20px, 3vw, 30px);
+            flex: 1 1 300px; max-width: 450px;
+            position: relative; overflow: hidden; display: flex; flex-direction: column;
+            will-change: transform; transition: transform 0.3s, box-shadow 0.3s;
         }
 
-        /* Animated Glowing Border for Premium */
         .price-card.premium::after {
-            content: '';
-            position: absolute;
-            top: -50%; left: -50%; width: 200%; height: 200%;
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
             background: conic-gradient(transparent, transparent, transparent, var(--primary));
-            animation: rotate 4s linear infinite;
-            z-index: -2;
+            animation: rotate 4s linear infinite; z-index: -2;
         }
         .price-card.premium::before {
-            content: '';
-            position: absolute;
-            inset: 2px;
-            background: #0a0a0a;
-            border-radius: 28px;
-            z-index: -1;
+            content: ''; position: absolute; inset: 2px; background: #0a0a0a;
+            border-radius: 22px; z-index: -1;
         }
+        @keyframes rotate { 100% { transform: rotate(360deg); } }
 
-        @keyframes rotate {
-            100% { transform: rotate(360deg); }
-        }
-
-        .price-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
-        }
+        .price-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5); }
 
         .tier-name {
-            font-size: clamp(1rem, 1.5vw, 1.2rem);
-            color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 10px;
+            font-size: clamp(0.9rem, 1.5vw, 1.1rem); color: var(--text-dim);
+            text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px;
         }
-
         .price {
-            font-size: clamp(2.5rem, 4vw, 4rem);
-            font-weight: 700;
-            margin-bottom: 20px;
-            color: var(--text-main);
+            font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 700; margin-bottom: 20px;
         }
+        .price span { font-size: 1.2rem; color: var(--primary); vertical-align: top; }
 
-        .price span {
-            font-size: 1.5rem;
-            color: var(--primary);
-            vertical-align: top;
-        }
-
-        ul {
-            list-style: none;
-            margin-bottom: 30px;
-            flex-grow: 1;
-        }
-
+        ul { list-style: none; margin-bottom: 30px; flex-grow: 1; }
         li {
-            margin: clamp(8px, 1.5vw, 15px) 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #ccc;
-            font-size: clamp(0.9rem, 1.2vw, 1rem);
+            margin: clamp(6px, 1.5vw, 12px) 0; display: flex; align-items: center; gap: 10px;
+            color: #ccc; font-size: clamp(0.85rem, 1.2vw, 0.95rem);
         }
 
         .icon-check { color: var(--primary); font-weight: bold; }
         .icon-cross { color: #555; font-weight: bold; }
 
         .btn {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            background: transparent;
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            text-align: center;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
-            text-decoration: none;
-            margin-top: auto;
+            display: block; width: 100%; padding: 12px;
+            background: transparent; border: 1px solid var(--primary); color: var(--primary);
+            text-align: center; border-radius: 10px; font-size: 1rem; font-weight: bold;
+            position: relative; overflow: hidden; z-index: 1; text-decoration: none; margin-top: auto;
         }
-
         .btn::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%; width: 100%; height: 100%;
-            background: var(--primary);
-            transition: left 0.3s;
-            z-index: -1;
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: var(--primary); transition: left 0.3s; z-index: -1;
         }
-
         .btn:hover::before { left: 0; }
         .btn:hover { color: #000; }
 
-        /* Integrated Static Contact Flyer Section */
-        .section-header {
-            text-align: center;
-            margin-bottom: 40px;
+        /* Dual Contact Architecture */
+        .section-header { text-align: center; margin-bottom: clamp(20px, 4vw, 40px); }
+        .section-header h2 { font-size: clamp(1.8rem, 4vw, 3rem); margin-bottom: 10px; }
+
+        .contact-dual-container {
+            display: flex; flex-direction: row; gap: 30px; width: 100%; max-width: 1000px;
+            background: var(--glass); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border); border-radius: 24px;
+            padding: clamp(20px, 4vw, 40px);
         }
 
-        .section-header h2 {
-            font-size: clamp(2rem, 4vw, 3rem);
-            margin-bottom: 15px;
+        @media (max-width: 768px) {
+            .contact-dual-container { flex-direction: column; gap: 20px; }
+            section { scroll-snap-align: none; min-height: auto; padding-top: 100px; padding-bottom: 50px; }
+            html { scroll-snap-type: none; } /* Disable snap on mobile to prevent cut-off tall sections */
         }
 
-        .contact-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            width: 100%;
-            max-width: 600px;
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 30px;
-            padding: clamp(30px, 5vw, 60px) clamp(20px, 4vw, 40px);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        .contact-classic {
+            flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 15px;
+            padding-right: 20px; border-right: 1px solid var(--glass-border);
         }
 
-        .contact-info {
-            width: 100%;
+        @media (max-width: 768px) {
+            .contact-classic { border-right: none; border-bottom: 1px solid var(--glass-border); padding-right: 0; padding-bottom: 20px; }
         }
 
-        .contact-info h3 {
-            color: var(--primary);
-            margin-bottom: 30px;
-            font-size: clamp(1.5rem, 3vw, 2rem);
-            text-transform: uppercase;
-            letter-spacing: 2px;
+        .contact-classic h3 {
+            color: var(--primary); font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px; text-align: center;
         }
 
-        .info-row {
-            margin-bottom: 25px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            font-size: clamp(1rem, 2vw, 1.3rem);
-            color: var(--text-dim);
-            transition: color 0.3s;
+        .contact-btn {
+            display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%;
+            padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px; color: var(--text-main); text-decoration: none; font-size: 1rem; transition: all 0.3s;
+        }
+        .contact-btn:hover { background: rgba(0, 255, 204, 0.1); border-color: var(--primary); transform: translateY(-2px); }
+
+        .contact-terminal {
+            flex: 1.5; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--glass-border);
+            border-radius: 12px; padding: 15px; font-family: 'Courier New', Courier, monospace;
+            display: flex; flex-direction: column; height: 250px; position: relative;
         }
 
-        .info-row:hover {
-            color: var(--text-main);
+        .term-header { color: var(--text-dim); font-size: 0.75rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 8px; margin-bottom: 8px; text-align: center; pointer-events: none; }
+        .term-output-area { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; color: var(--primary); font-size: 0.85rem; margin-bottom: 10px; pointer-events: none; }
+        .term-line { opacity: 0; animation: fadeIn 0.3s forwards; }
+        .term-user-input { color: #fff; } .term-sys-error { color: #ff3333; } .term-sys-success { color: var(--primary); }
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        .term-input-line { display: flex; align-items: center; gap: 8px; color: var(--primary); pointer-events: none; font-size: 0.85rem; }
+        .term-input { background: transparent; border: none; color: var(--primary); font-family: inherit; font-size: 0.85rem; flex-grow: 1; outline: none; pointer-events: auto; }
+
+        /* Cinematic X-Ray Engine */
+        html, body, body *:not(.cursor-dot):not(.cursor-outline) {
+            transition: background-color 1s ease, color 1s ease, border-color 1s ease, opacity 1s ease, text-shadow 1s ease, box-shadow 1s ease, outline-color 1s ease !important;
         }
 
-        .info-row span.val {
-            color: var(--text-main);
+        .xray-grid {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: linear-gradient(rgba(0, 255, 0, 0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 0, 0.15) 1px, transparent 1px);
+            background-size: 40px 40px; z-index: -1; pointer-events: none; opacity: 0; 
         }
+
+        [data-tag] { outline: 1px dashed transparent !important; position: relative; }
+        [data-tag]::after {
+            content: "<" attr(data-tag) ">"; position: absolute; top: -12px; left: -1px;
+            font-size: 9px; font-family: monospace; color: #000 !important; background: #00ff00 !important;
+            padding: 1px 3px; z-index: 50; line-height: 1; pointer-events: none; opacity: 0; 
+        }
+
+        /* X-RAY STATE */
+        body.xray-mode { background-color: #000; }
+        body.xray-mode #webgl-canvas { opacity: 0; } 
+        body.xray-mode .xray-grid { opacity: 1; } 
+        body.xray-mode * { color: #00ff00 !important; text-shadow: none !important; background: transparent !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; box-shadow: none !important; border-color: rgba(0, 255, 0, 0.4) !important; }
+        body.xray-mode [data-tag] { outline-color: rgba(0, 255, 0, 0.5) !important; }
+        body.xray-mode [data-tag]::after { opacity: 1; }
+        body.xray-mode .cursor-dot { background-color: #00ff00 !important; }
+        body.xray-mode .cursor-outline { border-color: #00ff00 !important; }
+        body.xray-mode .logo { -webkit-text-fill-color: #00ff00; }
 
     </style>
 </head>
 <body>
 
-    <!-- Dynamic Custom Cursor -->
     <div class="cursor-dot"></div>
     <div class="cursor-outline"></div>
 
-    <!-- Raw WebGL / Particle Background -->
     <canvas id="webgl-canvas"></canvas>
+    <div class="xray-grid"></div>
 
-    <!-- Navigation -->
     <nav>
-        <div class="logo">WebCraft Solutions</div>
-        <button class="lang-toggle" id="lang-btn">Switch to RO</button>
+        <div class="logo">WebCraftsmen</div>
+        <div class="nav-controls">
+            <button class="xray-toggle" id="xray-btn">Initialize X-Ray</button>
+            <button class="lang-toggle" id="lang-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="globe-icon">
+                    <circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                </svg>
+                <span id="lang-text">Switch to RO</span>
+            </button>
+        </div>
     </nav>
 
-    <!-- Hero Section (Screen 1) -->
     <section id="home" class="hero reveal">
         <h1 id="t-hero-title">Engineering Digital<br><span style="color: var(--primary)">Perfection</span></h1>
         <p id="t-hero-sub">We construct uncompromised web architecture. Raw performance. Absolute functionality. Zero bloat.</p>
     </section>
 
-    <!-- Pricing Section (Screen 2) -->
     <section id="pricing" class="pricing-section reveal">
         <div class="pricing-container">
-            <!-- 700 Tier -->
             <div class="price-card">
                 <div class="tier-name" id="t-tier-1-name">Presentation Architecture</div>
-                <div class="price"><span>€</span>700</div>
+                <div class="price"><span>€</span>1500</div>
                 <ul>
                     <li><span class="icon-check">✓</span> <span id="t-f1-1">Advanced UI/UX Design</span></li>
                     <li><span class="icon-check">✓</span> <span id="t-f1-2">Mobile Responsiveness</span></li>
@@ -382,11 +333,9 @@
                 </ul>
                 <a href="#contact" class="btn" id="t-btn-1">Deploy Presentation</a>
             </div>
-
-            <!-- 2000 Tier -->
-            <div class="price-card premium" style="transition-delay: 0.2s;">
+            <div class="price-card premium">
                 <div class="tier-name" id="t-tier-2-name" style="color: var(--primary);">Ultra Premium Architecture</div>
-                <div class="price"><span>€</span>2000</div>
+                <div class="price"><span>€</span>3500</div>
                 <ul>
                     <li><span class="icon-check">✓</span> <span id="t-f2-1">Full Custom Functionality</span></li>
                     <li><span class="icon-check">✓</span> <span id="t-f2-2">Complex User Interactions</span></li>
@@ -400,221 +349,236 @@
         </div>
     </section>
 
-    <!-- Contact Section (Screen 3) -->
     <section id="contact" class="contact-section reveal">
         <div class="section-header">
             <h2 id="t-contact-title">Initialize Comm-Link</h2>
-            <p id="t-contact-sub" style="color: var(--text-dim);">Secure channel open. Awaiting your transmission.</p>
+            <p id="t-contact-sub" style="color: var(--text-dim);">Secure channel open. Select transmission method.</p>
         </div>
-
-        <div class="contact-container">
-            <div class="contact-info">
-                <h3 id="t-contact-info-title">Direct Link</h3>
-                <div class="info-row">
-                    <span>📧</span>
-                    <span class="val">hello@webcraftsolutions.dev</span>
-                </div>
-                <div class="info-row">
-                    <span>📞</span>
-                    <span class="val">+40 700 000 000</span>
-                </div>
-                <div class="info-row">
-                    <span>📍</span>
-                    <span class="val" id="t-contact-loc">Bucharest, Romania</span>
-                </div>
+        <div class="contact-dual-container">
+            <div class="contact-classic">
+                <h3 id="t-contact-info-title">Standard Link</h3>
+                <a href="mailto:support@webcraftsmen.store" class="contact-btn"><span>📧</span> support@webcraftsmen.store</a>
+                <a href="tel:+40700000000" class="contact-btn"><span>📞</span> +40 700 000 000</a>
+                <div class="contact-btn" style="pointer-events: none;"><span>📍</span> <span id="t-contact-loc">Bucharest, Romania</span></div>
+            </div>
+            <div class="contact-terminal" id="terminal-container">
+                <div class="term-header">WebCraftsmen OS v1.0.4 | Terminal Ready</div>
+                <div class="term-output-area" id="term-output"><div class="term-line">Type "help" to see available commands.</div></div>
+                <div class="term-input-line"><span>user@client:~$</span><input type="text" class="term-input" id="term-input" autocomplete="off" spellcheck="false"></div>
             </div>
         </div>
     </section>
 
     <script>
+        // Performance Hardware Check
+        const isTouchDevice = (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0));
+
         /* ==========================================
-           1. CUSTOM CURSOR PHYSICS
+           0. TERMINAL LOGIC
         ========================================== */
-        const cursorDot = document.querySelector('.cursor-dot');
-        const cursorOutline = document.querySelector('.cursor-outline');
-        let mouseX = 0, mouseY = 0;
-        let outlineX = 0, outlineY = 0;
+        const termOutput = document.getElementById('term-output');
+        const termInput = document.getElementById('term-input');
+        const terminalContainer = document.getElementById('terminal-container');
+        let termState = 'idle'; let userEmail = '';
 
-        window.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-            
-            // Immediate dot follow
-            cursorDot.style.left = `${mouseX}px`;
-            cursorDot.style.top = `${mouseY}px`;
+        terminalContainer.addEventListener('click', () => termInput.focus());
+
+        function printToTerminal(text, className="term-line") {
+            const div = document.createElement('div');
+            div.className = className; div.innerHTML = text;
+            termOutput.appendChild(div);
+            termOutput.scrollTop = termOutput.scrollHeight;
+        }
+
+        termInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const val = termInput.value.trim();
+                if (!val) return;
+                printToTerminal(`user@client:~$ ${val}`, 'term-line term-user-input');
+                termInput.value = ''; processTerminal(val);
+            }
         });
 
-        // Smooth trailing outline
-        function animateCursor() {
-            outlineX += (mouseX - outlineX) * 0.15;
-            outlineY += (mouseY - outlineY) * 0.15;
-            cursorOutline.style.left = `${outlineX}px`;
-            cursorOutline.style.top = `${outlineY}px`;
-            requestAnimationFrame(animateCursor);
+        function processTerminal(cmd) {
+            const lowerCmd = cmd.toLowerCase();
+            if (termState === 'idle') {
+                if (lowerCmd === 'help') {
+                    printToTerminal('- <b>run diagnostics</b> : Check system integrity');
+                    printToTerminal('- <b>initiate_contact</b>: Open secure payload channel');
+                    printToTerminal('- <b>clear</b>           : Wipe terminal screen');
+                } else if (lowerCmd === 'run diagnostics') {
+                    printToTerminal('Scanning architecture...');
+                    setTimeout(() => printToTerminal('CPU: Optimal | UI: Responsive | DB: Disconnected'), 600);
+                    setTimeout(() => printToTerminal('Status: ZERO BLOAT DETECTED', 'term-line term-sys-success'), 1200);
+                } else if (lowerCmd === 'clear') {
+                    termOutput.innerHTML = ''; printToTerminal('Type "help" to see available commands.');
+                } else if (lowerCmd === 'initiate_contact') {
+                    termState = 'email'; printToTerminal('Enter your email address:');
+                } else { printToTerminal(`Command not recognized: ${cmd}`, 'term-line term-sys-error'); }
+            } else if (termState === 'email') {
+                if (cmd.includes('@')) { userEmail = cmd; termState = 'message'; printToTerminal('Email logged. Enter your message:');
+                } else { printToTerminal('Invalid email format. Try again:', 'term-line term-sys-error'); }
+            } else if (termState === 'message') {
+                printToTerminal('Encrypting and transmitting payload...');
+                setTimeout(() => { printToTerminal('Transmission successful. We will respond shortly.', 'term-line term-sys-success'); termState = 'idle'; }, 1500);
+            }
         }
-        animateCursor();
 
-        // Hover effect for links and buttons
-        document.querySelectorAll('a, button').forEach(el => {
-            el.addEventListener('mouseenter', () => {
-                cursorOutline.style.width = '60px';
-                cursorOutline.style.height = '60px';
-                cursorOutline.style.backgroundColor = 'rgba(0, 255, 204, 0.1)';
-            });
-            el.addEventListener('mouseleave', () => {
-                cursorOutline.style.width = '40px';
-                cursorOutline.style.height = '40px';
-                cursorOutline.style.backgroundColor = 'transparent';
-            });
+        /* ==========================================
+           1. X-RAY MODE LOGIC
+        ========================================== */
+        document.querySelectorAll('section, div, nav, h1, h2, h3, p, ul, li, a, button, input, span').forEach(el => {
+            if(!el.classList.contains('cursor-dot') && !el.classList.contains('cursor-outline') && !el.classList.contains('xray-grid')) {
+                if(el.tagName.toLowerCase() !== 'input') { el.setAttribute('data-tag', el.tagName.toLowerCase()); }
+            }
+        });
+
+        const xrayBtn = document.getElementById('xray-btn');
+        xrayBtn.addEventListener('click', () => {
+            document.body.classList.toggle('xray-mode');
+            xrayBtn.innerText = document.body.classList.contains('xray-mode') ? 'Disable X-Ray' : 'Initialize X-Ray';
         });
 
         /* ==========================================
-           2. PARTICLE PHYSICS ENGINE (CANVAS)
+           2. CURSOR PHYSICS (Disabled on Mobile)
+        ========================================== */
+        if (!isTouchDevice) {
+            const cursorDot = document.querySelector('.cursor-dot');
+            const cursorOutline = document.querySelector('.cursor-outline');
+            let mouseX = 0, mouseY = 0, outlineX = 0, outlineY = 0;
+
+            window.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX; mouseY = e.clientY;
+                cursorDot.style.left = `${mouseX}px`; cursorDot.style.top = `${mouseY}px`;
+            });
+
+            function animateCursor() {
+                outlineX += (mouseX - outlineX) * 0.15; outlineY += (mouseY - outlineY) * 0.15;
+                cursorOutline.style.left = `${outlineX}px`; cursorOutline.style.top = `${outlineY}px`;
+                requestAnimationFrame(animateCursor);
+            }
+            animateCursor();
+
+            document.querySelectorAll('a, button, input:not(.term-input)').forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    cursorOutline.style.width = '60px'; cursorOutline.style.height = '60px';
+                    if(!document.body.classList.contains('xray-mode')) cursorOutline.style.backgroundColor = 'rgba(0, 255, 204, 0.1)';
+                });
+                el.addEventListener('mouseleave', () => {
+                    cursorOutline.style.width = '40px'; cursorOutline.style.height = '40px';
+                    cursorOutline.style.backgroundColor = 'transparent';
+                });
+            });
+
+            if(terminalContainer) {
+                terminalContainer.addEventListener('mouseenter', () => { cursorDot.style.opacity = '0'; cursorOutline.style.opacity = '0'; });
+                terminalContainer.addEventListener('mouseleave', () => { cursorDot.style.opacity = '1'; cursorOutline.style.opacity = '1'; });
+            }
+        }
+
+        /* ==========================================
+           3. CANVAS PHYSICS (Scaled for Mobile)
         ========================================== */
         const canvas = document.getElementById('webgl-canvas');
         const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
 
         let particlesArray = [];
-        const numberOfParticles = Math.min(100, (canvas.width * canvas.height) / 10000);
+        // MASSIVE OPTIMIZATION: Drastically cut particles on small screens
+        let particleDensity = isTouchDevice || window.innerWidth < 768 ? 20000 : 10000;
+        let numberOfParticles = Math.min(isTouchDevice ? 30 : 100, (canvas.width * canvas.height) / particleDensity);
+        
+        let mouseCanvasX = 0, mouseCanvasY = 0;
+        if (!isTouchDevice) {
+            window.addEventListener('mousemove', (e) => { mouseCanvasX = e.clientX; mouseCanvasY = e.clientY; });
+        }
 
         class Particle {
             constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2;
-                this.speedX = Math.random() * 1 - 0.5;
-                this.speedY = Math.random() * 1 - 0.5;
+                this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 1.5 + 0.5;
+                this.speedX = Math.random() * 0.8 - 0.4; this.speedY = Math.random() * 0.8 - 0.4;
             }
             update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-
+                this.x += this.speedX; this.y += this.speedY;
                 if (this.x > canvas.width || this.x < 0) this.speedX = -this.speedX;
                 if (this.y > canvas.height || this.y < 0) this.speedY = -this.speedY;
-
-                // Mouse repulsion physics
-                let dx = mouseX - this.x;
-                let dy = mouseY - this.y;
-                let distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < 150) {
-                    this.x -= dx / 10;
-                    this.y -= dy / 10;
+                
+                if (!isTouchDevice) {
+                    let dx = mouseCanvasX - this.x, dy = mouseCanvasY - this.y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < 120) { this.x -= dx / 15; this.y -= dy / 15; }
                 }
             }
             draw() {
-                ctx.fillStyle = 'rgba(0, 255, 204, 0.5)';
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.fillStyle = 'rgba(0, 255, 204, 0.4)'; ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
             }
         }
 
         function initParticles() {
             particlesArray = [];
-            for (let i = 0; i < numberOfParticles; i++) {
-                particlesArray.push(new Particle());
-            }
+            numberOfParticles = Math.min(isTouchDevice ? 30 : 100, (canvas.width * canvas.height) / particleDensity);
+            for (let i = 0; i < numberOfParticles; i++) particlesArray.push(new Particle());
         }
 
         function animateParticles() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             for (let i = 0; i < particlesArray.length; i++) {
-                particlesArray[i].update();
-                particlesArray[i].draw();
-                
-                // Draw connecting lines
+                particlesArray[i].update(); particlesArray[i].draw();
                 for (let j = i; j < particlesArray.length; j++) {
-                    let dx = particlesArray[i].x - particlesArray[j].x;
-                    let dy = particlesArray[i].y - particlesArray[j].y;
+                    let dx = particlesArray[i].x - particlesArray[j].x, dy = particlesArray[i].y - particlesArray[j].y;
                     let distance = Math.sqrt(dx * dx + dy * dy);
-                    
-                    if (distance < 120) {
-                        ctx.beginPath();
-                        ctx.strokeStyle = `rgba(0, 255, 204, ${1 - distance/120})`;
-                        ctx.lineWidth = 0.5;
-                        ctx.moveTo(particlesArray[i].x, particlesArray[i].y);
-                        ctx.lineTo(particlesArray[j].x, particlesArray[j].y);
-                        ctx.stroke();
+                    if (distance < 100) {
+                        ctx.beginPath(); ctx.strokeStyle = `rgba(0, 255, 204, ${0.8 - distance/100})`;
+                        ctx.lineWidth = 0.4; ctx.moveTo(particlesArray[i].x, particlesArray[i].y);
+                        ctx.lineTo(particlesArray[j].x, particlesArray[j].y); ctx.stroke();
                     }
                 }
             }
             requestAnimationFrame(animateParticles);
         }
-        initParticles();
-        animateParticles();
-
+        initParticles(); animateParticles();
+        
+        let resizeTimeout;
         window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            initParticles();
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                canvas.width = window.innerWidth; canvas.height = window.innerHeight; initParticles();
+            }, 200);
         });
 
         /* ==========================================
-           3. ASYNC SCROLL REVEAL OBSERVER
+           4. SCROLL REVEAL (IntersectionObserver)
         ========================================== */
         const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
-                }
-            });
-        }, { threshold: 0.1 });
-
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
+        }, { threshold: 0.05 });
         document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
 
         /* ==========================================
-           4. DATA-DRIVEN TRANSLATION ENGINE
+           5. DATA-DRIVEN TRANSLATION ENGINE
         ========================================== */
         const dictionary = {
             en: {
                 't-hero-title': 'Engineering Digital<br><span style="color: var(--primary)">Perfection</span>',
                 't-hero-sub': 'We construct uncompromised web architecture. Raw performance. Absolute functionality. Zero bloat.',
-                't-tier-1-name': 'Presentation Architecture',
-                't-f1-1': 'Advanced UI/UX Design',
-                't-f1-2': 'Mobile Responsiveness',
-                't-f1-3': 'Maximum Load Velocity',
-                't-f1-4': 'No Database Integration',
-                't-f1-5': 'No User Interactions',
-                't-f1-6': 'No Future Updates Included',
-                't-btn-1': 'Deploy Presentation',
-                't-tier-2-name': 'Ultra Premium Architecture',
-                't-f2-1': 'Full Custom Functionality',
-                't-f2-2': 'Complex User Interactions',
-                't-f2-3': 'Full Backend / DB Infrastructure',
-                't-f2-4': 'Continuous System Updates',
-                't-f2-5': 'Priority Technical Support',
-                't-f2-6': 'Advanced Analytics Integration',
-                't-btn-2': 'Deploy Ultra Premium',
-                't-contact-title': 'Initialize Comm-Link',
-                't-contact-sub': 'Secure channel open. Awaiting your transmission.',
-                't-contact-info-title': 'Direct Link',
-                't-contact-loc': 'Bucharest, Romania'
+                't-tier-1-name': 'Presentation Architecture', 't-f1-1': 'Advanced UI/UX Design', 't-f1-2': 'Mobile Responsiveness', 't-f1-3': 'Maximum Load Velocity',
+                't-f1-4': 'No Database Integration', 't-f1-5': 'No User Interactions', 't-f1-6': 'No Future Updates Included', 't-btn-1': 'Deploy Presentation',
+                't-tier-2-name': 'Ultra Premium Architecture', 't-f2-1': 'Full Custom Functionality', 't-f2-2': 'Complex User Interactions', 't-f2-3': 'Full Backend / DB Infrastructure',
+                't-f2-4': 'Continuous System Updates', 't-f2-5': 'Priority Technical Support', 't-f2-6': 'Advanced Analytics Integration', 't-btn-2': 'Deploy Ultra Premium',
+                't-contact-title': 'Initialize Comm-Link', 't-contact-sub': 'Secure channel open. Select transmission method.',
+                't-contact-info-title': 'Standard Link', 't-contact-loc': 'Bucharest, Romania'
             },
             ro: {
                 't-hero-title': 'Proiectăm Perfecțiunea<br><span style="color: var(--primary)">Digitală</span>',
                 't-hero-sub': 'Construim arhitectură web fără compromisuri. Performanță brută. Funcționalitate absolută. Zero întârzieri.',
-                't-tier-1-name': 'Site de Prezentare',
-                't-f1-1': 'Design UI/UX Avansat',
-                't-f1-2': 'Optimizare pentru Mobil',
-                't-f1-3': 'Viteză Maximă de Încărcare',
-                't-f1-4': 'Fără Integrare Baze de Date',
-                't-f1-5': 'Fără Interacțiuni Utilizator',
-                't-f1-6': 'Fără Actualizări Viitoare',
-                't-btn-1': 'Alege Prezentare',
-                't-tier-2-name': 'Arhitectură Ultra Premium',
-                't-f2-1': 'Funcționalitate Completă',
-                't-f2-2': 'Interacțiuni Complexe',
-                't-f2-3': 'Infrastructură Backend / Baze de Date',
-                't-f2-4': 'Actualizări de Sistem Continue',
-                't-f2-5': 'Suport Tehnic Prioritar',
-                't-f2-6': 'Integrare Analytics Avansată',
-                't-btn-2': 'Alege Ultra Premium',
-                't-contact-title': 'Inițializare Conexiune',
-                't-contact-sub': 'Canal securizat deschis. Așteptăm transmisia ta.',
-                't-contact-info-title': 'Conexiune Directă',
-                't-contact-loc': 'București, România'
+                't-tier-1-name': 'Site de Prezentare', 't-f1-1': 'Design UI/UX Avansat', 't-f1-2': 'Optimizare pentru Mobil', 't-f1-3': 'Viteză Maximă de Încărcare',
+                't-f1-4': 'Fără Integrare Baze de Date', 't-f1-5': 'Fără Interacțiuni Utilizator', 't-f1-6': 'Fără Actualizări Viitoare', 't-btn-1': 'Alege Prezentare',
+                't-tier-2-name': 'Arhitectură Ultra Premium', 't-f2-1': 'Funcționalitate Completă', 't-f2-2': 'Interacțiuni Complexe', 't-f2-3': 'Infrastructură Backend / Baze de Date',
+                't-f2-4': 'Actualizări de Sistem Continue', 't-f2-5': 'Suport Tehnic Prioritar', 't-f2-6': 'Integrare Analytics Avansată', 't-btn-2': 'Alege Ultra Premium',
+                't-contact-title': 'Inițializare Conexiune', 't-contact-sub': 'Canal securizat deschis. Selectați metoda de transmisie.',
+                't-contact-info-title': 'Conexiune Standard', 't-contact-loc': 'București, România'
             }
         };
 
@@ -623,16 +587,15 @@
 
         langBtn.addEventListener('click', () => {
             currentLang = currentLang === 'en' ? 'ro' : 'en';
-            langBtn.innerText = currentLang === 'en' ? 'Switch to RO' : 'Schimbă în EN';
+            document.getElementById('lang-text').innerText = currentLang === 'en' ? 'Switch to RO' : 'Schimbă în EN';
             
-            // Animate text change via fade out/in
             document.querySelectorAll('[id^="t-"]').forEach(el => {
+                if(el.id === 'lang-btn' || el.id === 'lang-text') return;
                 el.style.opacity = '0';
                 setTimeout(() => {
-                    el.innerHTML = dictionary[currentLang][el.id];
+                    if (dictionary[currentLang][el.id]) el.innerHTML = dictionary[currentLang][el.id];
                     el.style.opacity = '1';
                 }, 300);
-                el.style.transition = 'opacity 0.3s ease';
             });
         });
     </script>
