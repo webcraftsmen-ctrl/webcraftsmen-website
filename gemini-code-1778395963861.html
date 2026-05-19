@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebCraft Solutions Architect</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050505;
+            --primary: #00ffcc;
+            --secondary: #7000ff;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #ffffff;
+            --text-dim: #888888;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none; /* Custom Cursor */
+        }
+
+        /* 
+           SCROLL SNAP ARCHITECTURE 
+           This locks the page into exact 1-screen intervals
+        */
+        html {
+            scroll-behavior: smooth;
+            scroll-snap-type: y mandatory;
+            height: 100vh;
+            overflow-y: scroll;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Space Grotesk', sans-serif;
+            overflow-x: hidden;
+            margin: 0;
+        }
+
+        /* Interactive Canvas Background */
+        #webgl-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: radial-gradient(circle at center, #111 0%, #000 100%);
+        }
+
+        /* Custom Cursor */
+        .cursor-dot, .cursor-outline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+        }
+        .cursor-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--primary);
+        }
+        .cursor-outline {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--primary);
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+        }
+
+        /* Navbar - BLURRED BAR REMOVED */
+        nav {
+            position: absolute; /* Stays at the top, scrolls away */
+            top: 0;
+            width: 100%;
+            padding: 30px 5vw;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: transparent;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .lang-toggle {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-family: inherit;
+            font-weight: bold;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .lang-toggle:hover {
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
+            border-color: var(--primary);
+        }
+
+        /* Scroll Reveal Utility */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 
+           UNIVERSAL SECTION STYLING 
+           Forces every section to be exactly 1 screen tall
+        */
+        section {
+            height: 100vh;
+            width: 100vw;
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0 5vw;
+            position: relative;
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 6vw, 6rem);
+            line-height: 1.1;
+            margin-bottom: 20px;
+            text-shadow: 0 0 40px rgba(0, 255, 204, 0.2);
+        }
+
+        .hero p {
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            color: var(--text-dim);
+            max-width: 600px;
+        }
+
+        /* Holographic Pricing Section */
+        .pricing-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .price-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: clamp(30px, 4vw, 50px) clamp(20px, 3vw, 40px);
+            flex: 1;
+            min-width: 300px;
+            max-width: 450px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Animated Glowing Border for Premium */
+        .price-card.premium::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: conic-gradient(transparent, transparent, transparent, var(--primary));
+            animation: rotate 4s linear infinite;
+            z-index: -2;
+        }
+        .price-card.premium::before {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            background: #0a0a0a;
+            border-radius: 28px;
+            z-index: -1;
+        }
+
+        @keyframes rotate {
+            100% { transform: rotate(360deg); }
+        }
+
+        .price-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+        }
+
+        .tier-name {
+            font-size: clamp(1rem, 1.5vw, 1.2rem);
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .price {
+            font-size: clamp(2.5rem, 4vw, 4rem);
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-main);
+        }
+
+        .price span {
+            font-size: 1.5rem;
+            color: var(--primary);
+            vertical-align: top;
+        }
+
+        ul {
+            list-style: none;
+            margin-bottom: 30px;
+            flex-grow: 1;
+        }
+
+        li {
+            margin: clamp(8px, 1.5vw, 15px) 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ccc;
+            font-size: clamp(0.9rem, 1.2vw, 1rem);
+        }
+
+        .icon-check { color: var(--primary); font-weight: bold; }
+        .icon-cross { color: #555; font-weight: bold; }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            text-align: center;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            text-decoration: none;
+            margin-top: auto;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 100%; height: 100%;
+            background: var(--primary);
+            transition: left 0.3s;
+            z-index: -1;
+        }
+
+        .btn:hover::before { left: 0; }
+        .btn:hover { color: #000; }
+
+        /* Integrated Static Contact Flyer Section */
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .section-header h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin-bottom: 15px;
+        }
+
+        .contact-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            width: 100%;
+            max-width: 600px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: clamp(30px, 5vw, 60px) clamp(20px, 4vw, 40px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .contact-info {
+            width: 100%;
+        }
+
+        .contact-info h3 {
+            color: var(--primary);
+            margin-bottom: 30px;
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .info-row {
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            color: var(--text-dim);
+            transition: color 0.3s;
+        }
+
+        .info-row:hover {
+            color: var(--text-main);
+        }
+
+        .info-row span.val {
+            color: var(--text-main);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Dynamic Custom Cursor -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <!-- Raw WebGL / Particle Background -->
+    <canvas id="webgl-canvas"></canvas>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">WebCraft Solutions</div>
+        <button class="lang-toggle" id="lang-btn">Switch to RO</button>
+    </nav>
+
+    <!-- Hero Section (Screen 1) -->
+    <section id="home" class="hero reveal">
+        <h1 id="t-hero-title">Engineering Digital<br><span style="color: var(--primary)">Perfection</span></h1>
+        <p id="t-hero-sub">We construct uncompromised web architecture. Raw performance. Absolute functionality. Zero bloat.</p>
+    </section>
+
+    <!-- Pricing Section (Screen 2) -->
+    <section id="pricing" class="pricing-section reveal">
+        <div class="pricing-container">
+            <!-- 700 Tier -->
+            <div class="price-card">
+                <div class="tier-name" id="t-tier-1-name">Presentation Architecture</div>
+                <div class="price"><span>€</span>700</div>
+                <ul>
+                    <li><span class="icon-check">✓</span> <span id="t-f1-1">Advanced UI/UX Design</span></li>
+                    <li><span class="icon-check">✓</span> <span id="t-f1-2">Mobile Responsiveness</span></li>
+                    <li><span class="icon-check">✓</span> <span id="t-f1-3">Maximum Load Velocity</span></li>
+                    <li><span class="icon-cross">✕</span> <span id="t-f1-4">No Database Integration</span></li>
+                    <li><span class="icon-cross">✕</span> <span id="t-f1-5">No User Interactions</span></li>
+                    <li><span class="icon-cross">✕</span> <span id="t-f1-6">No Future Updates Included</span></li>
+                </ul>
+                <a href="#contact" class="btn" id="t-btn-1">Deploy Presentation</a>
+            </div>
+
+            <!-- 2000 Tier -->
+            <div class="price-card premium" style="transition-delay: 0.2s;">
+                <div class="tier-name" id="t-tier-2-name" style="color: var(--primary);">Ultra Premium Architecture</div>
+                <div class="price"><span>€</span>2000</div>
+                <ul>
+                    <li><span class="icon-check">✓</span> <span id="t-f2-1">Full Custom Functionality</span></li>
+                    <li><span class="icon-check">✓</span> <span id="t-f2-2">Complex User Interactions</span></li>
+                    <li><span class="icon-check">✓</span> <span id="t-f2-3">Full Backend / DB Infrastructure</span></li>
+                    <li><span class="icon-check">✓</span> <span id="t-f2-4">Continuous System Updates</span></li>
+                    <li><span class="icon-check">✓</span> <span id="t-f2-5">Priority Technical Support</span></li>
+                    <li><span class="icon-check">✓</span> <span id="t-f2-6">Advanced Analytics Integration</span></li>
+                </ul>
+                <a href="#contact" class="btn" id="t-btn-2">Deploy Ultra Premium</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section (Screen 3) -->
+    <section id="contact" class="contact-section reveal">
+        <div class="section-header">
+            <h2 id="t-contact-title">Initialize Comm-Link</h2>
+            <p id="t-contact-sub" style="color: var(--text-dim);">Secure channel open. Awaiting your transmission.</p>
+        </div>
+
+        <div class="contact-container">
+            <div class="contact-info">
+                <h3 id="t-contact-info-title">Direct Link</h3>
+                <div class="info-row">
+                    <span>📧</span>
+                    <span class="val">hello@webcraftsolutions.dev</span>
+                </div>
+                <div class="info-row">
+                    <span>📞</span>
+                    <span class="val">+40 700 000 000</span>
+                </div>
+                <div class="info-row">
+                    <span>📍</span>
+                    <span class="val" id="t-contact-loc">Bucharest, Romania</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        /* ==========================================
+           1. CUSTOM CURSOR PHYSICS
+        ========================================== */
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorOutline = document.querySelector('.cursor-outline');
+        let mouseX = 0, mouseY = 0;
+        let outlineX = 0, outlineY = 0;
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            // Immediate dot follow
+            cursorDot.style.left = `${mouseX}px`;
+            cursorDot.style.top = `${mouseY}px`;
+        });
+
+        // Smooth trailing outline
+        function animateCursor() {
+            outlineX += (mouseX - outlineX) * 0.15;
+            outlineY += (mouseY - outlineY) * 0.15;
+            cursorOutline.style.left = `${outlineX}px`;
+            cursorOutline.style.top = `${outlineY}px`;
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // Hover effect for links and buttons
+        document.querySelectorAll('a, button').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursorOutline.style.width = '60px';
+                cursorOutline.style.height = '60px';
+                cursorOutline.style.backgroundColor = 'rgba(0, 255, 204, 0.1)';
+            });
+            el.addEventListener('mouseleave', () => {
+                cursorOutline.style.width = '40px';
+                cursorOutline.style.height = '40px';
+                cursorOutline.style.backgroundColor = 'transparent';
+            });
+        });
+
+        /* ==========================================
+           2. PARTICLE PHYSICS ENGINE (CANVAS)
+        ========================================== */
+        const canvas = document.getElementById('webgl-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particlesArray = [];
+        const numberOfParticles = Math.min(100, (canvas.width * canvas.height) / 10000);
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2;
+                this.speedX = Math.random() * 1 - 0.5;
+                this.speedY = Math.random() * 1 - 0.5;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x > canvas.width || this.x < 0) this.speedX = -this.speedX;
+                if (this.y > canvas.height || this.y < 0) this.speedY = -this.speedY;
+
+                // Mouse repulsion physics
+                let dx = mouseX - this.x;
+                let dy = mouseY - this.y;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < 150) {
+                    this.x -= dx / 10;
+                    this.y -= dy / 10;
+                }
+            }
+            draw() {
+                ctx.fillStyle = 'rgba(0, 255, 204, 0.5)';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particlesArray = [];
+            for (let i = 0; i < numberOfParticles; i++) {
+                particlesArray.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+                
+                // Draw connecting lines
+                for (let j = i; j < particlesArray.length; j++) {
+                    let dx = particlesArray[i].x - particlesArray[j].x;
+                    let dy = particlesArray[i].y - particlesArray[j].y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 120) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(0, 255, 204, ${1 - distance/120})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(particlesArray[i].x, particlesArray[i].y);
+                        ctx.lineTo(particlesArray[j].x, particlesArray[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animateParticles);
+        }
+        initParticles();
+        animateParticles();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initParticles();
+        });
+
+        /* ==========================================
+           3. ASYNC SCROLL REVEAL OBSERVER
+        ========================================== */
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+
+        /* ==========================================
+           4. DATA-DRIVEN TRANSLATION ENGINE
+        ========================================== */
+        const dictionary = {
+            en: {
+                't-hero-title': 'Engineering Digital<br><span style="color: var(--primary)">Perfection</span>',
+                't-hero-sub': 'We construct uncompromised web architecture. Raw performance. Absolute functionality. Zero bloat.',
+                't-tier-1-name': 'Presentation Architecture',
+                't-f1-1': 'Advanced UI/UX Design',
+                't-f1-2': 'Mobile Responsiveness',
+                't-f1-3': 'Maximum Load Velocity',
+                't-f1-4': 'No Database Integration',
+                't-f1-5': 'No User Interactions',
+                't-f1-6': 'No Future Updates Included',
+                't-btn-1': 'Deploy Presentation',
+                't-tier-2-name': 'Ultra Premium Architecture',
+                't-f2-1': 'Full Custom Functionality',
+                't-f2-2': 'Complex User Interactions',
+                't-f2-3': 'Full Backend / DB Infrastructure',
+                't-f2-4': 'Continuous System Updates',
+                't-f2-5': 'Priority Technical Support',
+                't-f2-6': 'Advanced Analytics Integration',
+                't-btn-2': 'Deploy Ultra Premium',
+                't-contact-title': 'Initialize Comm-Link',
+                't-contact-sub': 'Secure channel open. Awaiting your transmission.',
+                't-contact-info-title': 'Direct Link',
+                't-contact-loc': 'Bucharest, Romania'
+            },
+            ro: {
+                't-hero-title': 'Proiectăm Perfecțiunea<br><span style="color: var(--primary)">Digitală</span>',
+                't-hero-sub': 'Construim arhitectură web fără compromisuri. Performanță brută. Funcționalitate absolută. Zero întârzieri.',
+                't-tier-1-name': 'Site de Prezentare',
+                't-f1-1': 'Design UI/UX Avansat',
+                't-f1-2': 'Optimizare pentru Mobil',
+                't-f1-3': 'Viteză Maximă de Încărcare',
+                't-f1-4': 'Fără Integrare Baze de Date',
+                't-f1-5': 'Fără Interacțiuni Utilizator',
+                't-f1-6': 'Fără Actualizări Viitoare',
+                't-btn-1': 'Alege Prezentare',
+                't-tier-2-name': 'Arhitectură Ultra Premium',
+                't-f2-1': 'Funcționalitate Completă',
+                't-f2-2': 'Interacțiuni Complexe',
+                't-f2-3': 'Infrastructură Backend / Baze de Date',
+                't-f2-4': 'Actualizări de Sistem Continue',
+                't-f2-5': 'Suport Tehnic Prioritar',
+                't-f2-6': 'Integrare Analytics Avansată',
+                't-btn-2': 'Alege Ultra Premium',
+                't-contact-title': 'Inițializare Conexiune',
+                't-contact-sub': 'Canal securizat deschis. Așteptăm transmisia ta.',
+                't-contact-info-title': 'Conexiune Directă',
+                't-contact-loc': 'București, România'
+            }
+        };
+
+        let currentLang = 'en';
+        const langBtn = document.getElementById('lang-btn');
+
+        langBtn.addEventListener('click', () => {
+            currentLang = currentLang === 'en' ? 'ro' : 'en';
+            langBtn.innerText = currentLang === 'en' ? 'Switch to RO' : 'Schimbă în EN';
+            
+            // Animate text change via fade out/in
+            document.querySelectorAll('[id^="t-"]').forEach(el => {
+                el.style.opacity = '0';
+                setTimeout(() => {
+                    el.innerHTML = dictionary[currentLang][el.id];
+                    el.style.opacity = '1';
+                }, 300);
+                el.style.transition = 'opacity 0.3s ease';
+            });
+        });
+    </script>
+</body>
+</html>
