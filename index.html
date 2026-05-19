@@ -27,24 +27,23 @@
             cursor: none;
         }
 
-        /* PERFECT ALIGNMENT ARCHITECTURE 
-           Using dvh (Dynamic Viewport Height) to handle mobile browser bars
-        */
-        html {
-            scroll-behavior: smooth;
-            scroll-snap-type: y mandatory;
+        /* HARD-LOCKED NATIVE SCROLL */
+        html, body {
             height: 100%;
-            overflow-x: hidden;
-        }
-
-        body {
+            overflow: hidden; 
             background-color: var(--bg);
             color: var(--text-main);
             font-family: 'Space Grotesk', sans-serif;
-            overflow-x: hidden;
-            margin: 0;
-            height: 100%;
             -webkit-font-smoothing: antialiased;
+            touch-action: none; 
+        }
+
+        /* Cinematic FullPage Wrapper */
+        #fullpage-wrapper {
+            width: 100vw;
+            height: 100dvh;
+            transition: transform 1s cubic-bezier(0.86, 0, 0.07, 1);
+            will-change: transform;
         }
 
         /* Interactive Canvas Background */
@@ -56,14 +55,14 @@
             will-change: opacity;
         }
 
-        /* Custom Cursor (GPU Accelerated) */
+        /* Custom Cursor */
         .cursor-dot, .cursor-outline {
             position: fixed; top: 0; left: 0;
             transform: translate(-50%, -50%);
             border-radius: 50%;
             z-index: 9999;
             pointer-events: none;
-            will-change: transform;
+            will-change: transform, width, height;
         }
         .cursor-dot {
             width: 8px; height: 8px;
@@ -133,30 +132,24 @@
             .desktop-controls { display: none !important; }
             nav { justify-content: center; }
             .mobile-controls {
-                display: flex !important;
-                flex-direction: row;
-                justify-content: center;
-                align-items: center;
-                gap: 12px;
-                margin: 20px 0 30px 0;
-                width: 100%;
+                display: flex !important; flex-direction: row; justify-content: center;
+                align-items: center; gap: 12px; margin: 20px 0 30px 0; width: 100%;
             }
         }
 
         /* Scroll Reveal Utility */
         .reveal {
-            opacity: 0; transform: translateY(30px);
-            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 0; transform: translateY(40px) scale(0.95);
+            transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+            transition-delay: 0.3s;
             will-change: opacity, transform;
         }
-        .reveal.active { opacity: 1; transform: translateY(0); }
+        .reveal.active { opacity: 1; transform: translateY(0) scale(1); }
 
-        /* SECTIONS - Using dvh for perfect screen lock */
+        /* SECTIONS - Perfectly Sized */
         section {
             height: 100dvh; 
             width: 100vw;
-            scroll-snap-align: start; 
-            scroll-snap-stop: always;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             padding: 20px 5vw;
             position: relative;
@@ -223,7 +216,7 @@
             display: block; width: 100%; padding: 12px;
             background: transparent; border: 1px solid var(--primary); color: var(--primary);
             text-align: center; border-radius: 10px; font-size: 1rem; font-weight: bold;
-            position: relative; overflow: hidden; z-index: 1; text-decoration: none;
+            position: relative; overflow: hidden; z-index: 1; text-decoration: none; cursor: pointer;
         }
         .btn::before {
             content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
@@ -243,9 +236,7 @@
             padding: clamp(20px, 4vw, 30px);
         }
 
-        @media (max-width: 768px) {
-            .contact-dual-container { flex-direction: column; gap: 15px; }
-        }
+        @media (max-width: 768px) { .contact-dual-container { flex-direction: column; gap: 15px; } }
 
         .contact-classic {
             flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 12px;
@@ -272,7 +263,7 @@
         }
 
         .term-header { color: var(--text-dim); font-size: 0.7rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 5px; margin-bottom: 5px; text-align: center; pointer-events: none; }
-        .term-output-area { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; color: var(--primary); font-size: 0.8rem; margin-bottom: 5px; pointer-events: none; }
+        .term-output-area { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; color: var(--primary); font-size: 0.8rem; margin-bottom: 5px; pointer-events: auto; }
         .term-line { opacity: 0; animation: fadeIn 0.3s forwards; }
         .term-user-input { color: #fff; } .term-sys-error { color: #ff3333; } .term-sys-success { color: var(--primary); }
         @keyframes fadeIn { to { opacity: 1; } }
@@ -282,8 +273,9 @@
 
         /* Cinematic X-Ray Engine */
         html, body, body *:not(.cursor-dot):not(.cursor-outline) {
-            transition: background-color 1s ease, color 1s ease, border-color 1s ease, opacity 1s ease, text-shadow 1s ease, box-shadow 1s ease, outline-color 1s ease !important;
+            transition: background-color 1s ease, color 1s ease, border-color 1s ease, opacity 1s ease, text-shadow 1s ease, box-shadow 1s ease, outline-color 1s ease;
         }
+        #fullpage-wrapper { transition: transform 1s cubic-bezier(0.86, 0, 0.07, 1); } 
 
         .xray-grid {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
@@ -332,78 +324,179 @@
         </div>
     </nav>
 
-    <section id="home" class="hero reveal">
-        <h1 id="t-hero-title">Engineering Digital<br><span style="color: var(--primary)">Perfection</span></h1>
+    <div id="fullpage-wrapper">
         
-        <div class="nav-controls mobile-controls">
-            <button class="xray-toggle">Initialize X-Ray</button>
-            <button class="lang-toggle">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="globe-icon">
-                    <circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                </svg>
-                <span class="lang-text">Switch to RO</span>
-            </button>
-        </div>
+        <section id="home">
+            <div class="hero reveal">
+                <h1 id="t-hero-title">Engineering Digital<br><span style="color: var(--primary)">Perfection</span></h1>
+                <div class="nav-controls mobile-controls">
+                    <button class="xray-toggle">Initialize X-Ray</button>
+                    <button class="lang-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="globe-icon">
+                            <circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                        </svg>
+                        <span class="lang-text">Switch to RO</span>
+                    </button>
+                </div>
+                <p id="t-hero-sub">We construct uncompromised web architecture. Raw performance. Absolute functionality. Zero bloat.</p>
+            </div>
+        </section>
 
-        <p id="t-hero-sub">We construct uncompromised web architecture. Raw performance. Absolute functionality. Zero bloat.</p>
-    </section>
+        <section id="pricing">
+            <div class="pricing-container reveal">
+                <div class="price-card">
+                    <div class="tier-name" id="t-tier-1-name">Presentation Architecture</div>
+                    <div class="price"><span>€</span>1500</div>
+                    <ul>
+                        <li><span class="icon-check">✓</span> <span id="t-f1-1">Advanced UI/UX Design</span></li>
+                        <li><span class="icon-check">✓</span> <span id="t-f1-2">Mobile Responsiveness</span></li>
+                        <li><span class="icon-check">✓</span> <span id="t-f1-3">Maximum Load Velocity</span></li>
+                        <li><span class="icon-cross">✕</span> <span id="t-f1-4">No Database Integration</span></li>
+                        <li><span class="icon-cross">✕</span> <span id="t-f1-5">No User Interactions</span></li>
+                        <li><span class="icon-cross">✕</span> <span id="t-f1-6">No Future Updates Included</span></li>
+                    </ul>
+                    <button onclick="gotoSection(2)" class="btn" id="t-btn-1">Deploy Presentation</button>
+                </div>
+                <div class="price-card premium">
+                    <div class="tier-name" id="t-tier-2-name" style="color: var(--primary);">Ultra Premium Architecture</div>
+                    <div class="price"><span>€</span>3500</div>
+                    <ul>
+                        <li><span class="icon-check">✓</span> <span id="t-f2-1">Full Custom Functionality</span></li>
+                        <li><span class="icon-check">✓</span> <span id="t-f2-2">Complex User Interactions</span></li>
+                        <li><span class="icon-check">✓</span> <span id="t-f2-3">Full Backend / DB Infrastructure</span></li>
+                        <li><span class="icon-check">✓</span> <span id="t-f2-4">Continuous System Updates</span></li>
+                        <li><span class="icon-check">✓</span> <span id="t-f2-5">Priority Technical Support</span></li>
+                        <li><span class="icon-check">✓</span> <span id="t-f2-6">Advanced Analytics Integration</span></li>
+                    </ul>
+                    <button onclick="gotoSection(2)" class="btn" id="t-btn-2">Deploy Ultra Premium</button>
+                </div>
+            </div>
+        </section>
 
-    <section id="pricing" class="pricing-section reveal">
-        <div class="pricing-container">
-            <div class="price-card">
-                <div class="tier-name" id="t-tier-1-name">Presentation Architecture</div>
-                <div class="price"><span>€</span>1500</div>
-                <ul>
-                    <li><span class="icon-check">✓</span> <span id="t-f1-1">Advanced UI/UX Design</span></li>
-                    <li><span class="icon-check">✓</span> <span id="t-f1-2">Mobile Responsiveness</span></li>
-                    <li><span class="icon-check">✓</span> <span id="t-f1-3">Maximum Load Velocity</span></li>
-                    <li><span class="icon-cross">✕</span> <span id="t-f1-4">No Database Integration</span></li>
-                    <li><span class="icon-cross">✕</span> <span id="t-f1-5">No User Interactions</span></li>
-                    <li><span class="icon-cross">✕</span> <span id="t-f1-6">No Future Updates Included</span></li>
-                </ul>
-                <a href="#contact" class="btn" id="t-btn-1">Deploy Presentation</a>
+        <section id="contact">
+            <div class="contact-section reveal">
+                <div class="section-header">
+                    <h2 id="t-contact-title">Initialize Comm-Link</h2>
+                    <p id="t-contact-sub" style="color: var(--text-dim);">Secure channel open. Select transmission method.</p>
+                </div>
+                <div class="contact-dual-container">
+                    <div class="contact-classic">
+                        <h3 id="t-contact-info-title">Standard Link</h3>
+                        <a href="mailto:support@webcraftsmen.store" class="contact-btn"><span>📧</span> support@webcraftsmen.store</a>
+                        <a href="tel:+40700000000" class="contact-btn"><span>📞</span> +40 700 000 000</a>
+                        <div class="contact-btn" style="pointer-events: none;"><span>📍</span> <span id="t-contact-loc">Bucharest, Romania</span></div>
+                    </div>
+                    <div class="contact-terminal" id="terminal-container">
+                        <div class="term-header">WebCraftsmen OS v1.0.4 | Terminal Ready</div>
+                        <div class="term-output-area" id="term-output"><div class="term-line">Type "help" to see available commands.</div></div>
+                        <div class="term-input-line"><span>user@client:~$</span><input type="text" class="term-input" id="term-input" autocomplete="off" spellcheck="false"></div>
+                    </div>
+                </div>
             </div>
-            <div class="price-card premium">
-                <div class="tier-name" id="t-tier-2-name" style="color: var(--primary);">Ultra Premium Architecture</div>
-                <div class="price"><span>€</span>3500</div>
-                <ul>
-                    <li><span class="icon-check">✓</span> <span id="t-f2-1">Full Custom Functionality</span></li>
-                    <li><span class="icon-check">✓</span> <span id="t-f2-2">Complex User Interactions</span></li>
-                    <li><span class="icon-check">✓</span> <span id="t-f2-3">Full Backend / DB Infrastructure</span></li>
-                    <li><span class="icon-check">✓</span> <span id="t-f2-4">Continuous System Updates</span></li>
-                    <li><span class="icon-check">✓</span> <span id="t-f2-5">Priority Technical Support</span></li>
-                    <li><span class="icon-check">✓</span> <span id="t-f2-6">Advanced Analytics Integration</span></li>
-                </ul>
-                <a href="#contact" class="btn" id="t-btn-2">Deploy Ultra Premium</a>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <section id="contact" class="contact-section reveal">
-        <div class="section-header">
-            <h2 id="t-contact-title">Initialize Comm-Link</h2>
-            <p id="t-contact-sub" style="color: var(--text-dim);">Secure channel open. Select transmission method.</p>
-        </div>
-        <div class="contact-dual-container">
-            <div class="contact-classic">
-                <h3 id="t-contact-info-title">Standard Link</h3>
-                <a href="mailto:support@webcraftsmen.store" class="contact-btn"><span>📧</span> support@webcraftsmen.store</a>
-                <a href="tel:+40700000000" class="contact-btn"><span>📞</span> +40 700 000 000</a>
-                <div class="contact-btn" style="pointer-events: none;"><span>📍</span> <span id="t-contact-loc">Bucharest, Romania</span></div>
-            </div>
-            <div class="contact-terminal" id="terminal-container">
-                <div class="term-header">WebCraftsmen OS v1.0.4 | Terminal Ready</div>
-                <div class="term-output-area" id="term-output"><div class="term-line">Type "help" to see available commands.</div></div>
-                <div class="term-input-line"><span>user@client:~$</span><input type="text" class="term-input" id="term-input" autocomplete="off" spellcheck="false"></div>
-            </div>
-        </div>
-    </section>
+    </div>
 
     <script>
-        const isTouchDevice = (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0));
+        /* ==========================================
+           0. DYNAMIC BROWSER TAB FAVICON ENGINE
+        ========================================== */
+        function generateFavicon(isXray) {
+            const color = isXray ? '#00ff00' : '#00ffcc';
+            const svgData = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>`;
+            
+            let link = document.querySelector("link[rel~='icon']");
+            if (!link) {
+                link = document.createElement('link');
+                link.rel = 'icon';
+                document.head.appendChild(link);
+            }
+            link.href = 'data:image/svg+xml,' + encodeURIComponent(svgData);
+        }
+        
+        // Initialize Cyan Favicon on load
+        generateFavicon(false);
 
         /* ==========================================
-           0. TERMINAL LOGIC
+           1. FULLPAGE SCROLL HIJACK ENGINE
+        ========================================== */
+        const wrapper = document.getElementById('fullpage-wrapper');
+        const totalSections = 3;
+        let currentSection = 0;
+        let lastScrollTime = 0;
+        const scrollCooldown = 1200;
+
+        function gotoSection(index) {
+            if (index < 0 || index >= totalSections) return;
+            currentSection = index;
+            wrapper.style.transform = `translateY(-${currentSection * 100}dvh)`;
+            
+            setTimeout(() => {
+                document.querySelectorAll('.reveal').forEach((el) => {
+                    const rect = el.getBoundingClientRect();
+                    if(rect.top >= 0 && rect.bottom <= window.innerHeight + 100) {
+                        el.classList.add('active');
+                    } else {
+                        el.classList.remove('active');
+                    }
+                });
+            }, 600);
+        }
+
+        setTimeout(() => gotoSection(0), 100);
+
+        window.addEventListener('wheel', (e) => {
+            if (e.target.closest('.contact-terminal')) return;
+            const now = new Date().getTime();
+            if (now - lastScrollTime < scrollCooldown) return;
+
+            if (e.deltaY > 30) {
+                if (currentSection < totalSections - 1) { gotoSection(currentSection + 1); lastScrollTime = now; }
+            } else if (e.deltaY < -30) {
+                if (currentSection > 0) { gotoSection(currentSection - 1); lastScrollTime = now; }
+            }
+        }, { passive: false });
+
+        let touchStartY = 0;
+        window.addEventListener('touchstart', (e) => {
+            if (e.target.closest('.contact-terminal')) return;
+            touchStartY = e.touches[0].clientY;
+        }, { passive: false });
+
+        window.addEventListener('touchmove', (e) => {
+            if (e.target.closest('.contact-terminal')) return;
+            e.preventDefault(); 
+        }, { passive: false });
+
+        window.addEventListener('touchend', (e) => {
+            if (e.target.closest('.contact-terminal')) return;
+            const now = new Date().getTime();
+            if (now - lastScrollTime < scrollCooldown) return;
+
+            let touchEndY = e.changedTouches[0].clientY;
+            let deltaY = touchStartY - touchEndY;
+
+            if (deltaY > 50 && currentSection < totalSections - 1) {
+                gotoSection(currentSection + 1); lastScrollTime = now;
+            } else if (deltaY < -50 && currentSection > 0) {
+                gotoSection(currentSection - 1); lastScrollTime = now;
+            }
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (document.activeElement.tagName === 'INPUT') return; 
+            const now = new Date().getTime();
+            if (now - lastScrollTime < scrollCooldown) return;
+
+            if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+                if (currentSection < totalSections - 1) { gotoSection(currentSection + 1); lastScrollTime = now; }
+            } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+                if (currentSection > 0) { gotoSection(currentSection - 1); lastScrollTime = now; }
+            }
+        });
+
+        /* ==========================================
+           2. LIVE TERMINAL LOGIC (Formspree Integration)
         ========================================== */
         const termOutput = document.getElementById('term-output');
         const termInput = document.getElementById('term-input');
@@ -449,16 +542,40 @@
                 } else { printToTerminal('Invalid email format. Try again:', 'term-line term-sys-error'); }
             } else if (termState === 'message') {
                 printToTerminal('Encrypting and transmitting payload...');
-                setTimeout(() => { printToTerminal('Transmission successful. We will respond shortly.', 'term-line term-sys-success'); termState = 'idle'; }, 1500);
+                const userMessage = cmd;
+
+                // Live Formspree Fetch Call
+                fetch("https://formspree.io/f/mpqnqqvo", {
+                    method: "POST",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: userEmail,
+                        message: userMessage,
+                        _subject: "Terminal Transmission from WebCraftsmen"
+                    })
+                }).then(response => {
+                    if (response.ok) {
+                        printToTerminal('Transmission successful. We will respond shortly.', 'term-line term-sys-success');
+                    } else {
+                        printToTerminal('Error: Transmission blocked by routing firewall.', 'term-line term-sys-error');
+                    }
+                    termState = 'idle';
+                }).catch(error => {
+                    printToTerminal('Fatal Error: Network connection offline.', 'term-line term-sys-error');
+                    termState = 'idle';
+                });
             }
         }
 
         /* ==========================================
-           1. X-RAY MODE LOGIC
+           3. X-RAY MODE LOGIC 
         ========================================== */
         document.querySelectorAll('section, div, nav, h1, h2, h3, p, ul, li, a, button, input, span').forEach(el => {
             if(!el.classList.contains('cursor-dot') && !el.classList.contains('cursor-outline') && !el.classList.contains('xray-grid')) {
-                if(el.tagName.toLowerCase() !== 'input') { el.setAttribute('data-tag', el.tagName.toLowerCase()); }
+                if(el.tagName.toLowerCase() !== 'input' && el.id !== 'fullpage-wrapper') { el.setAttribute('data-tag', el.tagName.toLowerCase()); }
             }
         });
 
@@ -468,12 +585,15 @@
                 document.body.classList.toggle('xray-mode');
                 const isXray = document.body.classList.contains('xray-mode');
                 xrayBtns.forEach(b => b.innerText = isXray ? 'Disable X-Ray' : 'Initialize X-Ray');
+                
+                generateFavicon(isXray); 
             });
         });
 
         /* ==========================================
-           2. CURSOR PHYSICS (Disabled on Mobile)
+           4. CURSOR PHYSICS 
         ========================================== */
+        const isTouchDevice = (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0));
         if (!isTouchDevice) {
             const cursorDot = document.querySelector('.cursor-dot');
             const cursorOutline = document.querySelector('.cursor-outline');
@@ -509,7 +629,7 @@
         }
 
         /* ==========================================
-           3. CANVAS PHYSICS
+           5. CANVAS PHYSICS
         ========================================== */
         const canvas = document.getElementById('webgl-canvas');
         const ctx = canvas.getContext('2d');
@@ -576,15 +696,7 @@
         });
 
         /* ==========================================
-           4. SCROLL REVEAL
-        ========================================== */
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
-        }, { threshold: 0.05 });
-        document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
-
-        /* ==========================================
-           5. TRANSLATION ENGINE
+           6. TRANSLATION ENGINE
         ========================================== */
         const dictionary = {
             en: {
